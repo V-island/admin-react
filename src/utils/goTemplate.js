@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 // components
-import '@ant-design/compatible/assets/index.css';
 import { Form, Button, Divider, Row, Col } from 'antd';
 import GoForm from '@/components/GoTemplate/GoForm';
 import GoInput from '@/components/GoTemplate/GoInput';
