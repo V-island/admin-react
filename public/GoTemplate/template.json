@@ -1,0 +1,239 @@
+{
+  "code": 1,
+  "data": {
+    "name": "一般表单流程",
+    "type": 1,
+    "default": false,
+    "identifier": "GoForm",
+    "props": {
+      "apiUrl": "/templateItem.json",
+      "className": "",
+      "layout": "vertical",
+      "labelCol": {
+        "span": 8
+      },
+      "wrapperCol": {
+        "span": 24
+      }
+    },
+    "child": [
+      {
+        "name": "一般容器",
+        "type": 1,
+        "default": true,
+        "identifier": "div",
+        "props": {
+          "className": "",
+          "style": {
+            "backgroundColor": "#fff",
+            "width": "100%",
+            "minHeight": "50px",
+            "padding": "32px",
+            "marginBottom": "24px",
+            "borderRadius": "16px",
+            "boxShadow": "0 1px 2px 0 rgb(44 46 60 / 15%)"
+          }
+        },
+        "properties": [],
+        "child": [
+          {
+            "name": "标题文字",
+            "type": 2,
+            "default": true,
+            "identifier": "h3",
+            "props": {},
+            "properties": [
+              {
+                "name": "标题文字",
+                "prompt": "请输入标题文字",
+                "type": "input",
+                "key": "title",
+                "default_val": "添加联系人",
+                "data": ""
+              }
+            ]
+          },
+          {
+            "name": "分割线",
+            "type": 1,
+            "default": false,
+            "identifier": "GoDivider",
+            "props": {},
+            "properties": []
+          },
+          {
+            "name": "栅格 Row",
+            "type": 1,
+            "default": false,
+            "identifier": "GoRow",
+            "props": {
+              "className": ""
+            },
+            "properties": [],
+            "child": [
+              {
+                "name": "栅格 Row",
+                "type": 1,
+                "default": false,
+                "identifier": "GoCol",
+                "props": {
+                  "className": "",
+                  "flex": "1.5 1"
+                },
+                "properties": [],
+                "child": [
+                  {
+                    "name": "次级标题",
+                    "type": 3,
+                    "default": true,
+                    "identifier": "p",
+                    "props": {
+                      "style": {
+                        "fontSize": "20px",
+                        "fontWeight": "500",
+                        "color": "#151827",
+                        "lineHeight": "28px",
+                        "marginBottom": "17px"
+                      }
+                    },
+                    "properties": [
+                      {
+                        "name": "次级标题",
+                        "prompt": "请输入次级标题",
+                        "type": "input",
+                        "key": "title",
+                        "default_val": "基本信息",
+                        "data": ""
+                      }
+                    ]
+                  },
+                  {
+                    "name": "说明文字",
+                    "type": 3,
+                    "default": true,
+                    "identifier": "span",
+                    "props": {
+                      "style": {
+                        "fontSize": "14px",
+                        "fontWeight": "400",
+                        "color": "#999",
+                        "lineHeight": "20px"
+                      }
+                    },
+                    "properties": [
+                      {
+                        "name": "说明文字",
+                        "prompt": "请输入说明文字",
+                        "type": "input",
+                        "key": "title",
+                        "default_val": "联系人的基本信息",
+                        "data": ""
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "栅格 Col",
+                "type": 1,
+                "default": false,
+                "identifier": "GoCol",
+                "props": {
+                  "className": "",
+                  "flex": "2 1"
+                },
+                "properties": [],
+                "child": [
+                  {
+                    "name": "单选框",
+                    "type": 3,
+                    "default": false,
+                    "identifier": "GoRadio",
+                    "props": {
+                      "label": "类型",
+                      "name": "subject_type",
+                      "rules": [
+                        {
+                          "required": true,
+                          "message": "请选择类型"
+                        }
+                      ],
+                      "apiUrl": "/GoTemplate/templateItem1.json",
+                      "options": [
+                        {
+                          "label": "个人",
+                          "value": 1
+                        },
+                        {
+                          "label": "企业",
+                          "value": 2
+                        }
+                      ],
+                      "value": 2,
+                      "content": {
+                        "name": "单行输入框",
+                        "type": 3,
+                        "default": false,
+                        "identifier": "GoInput",
+                        "props": {
+                          "label": "公司名称",
+                          "name": "company_name",
+                          "value": "Test公司",
+                          "rules": [
+                            {
+                              "required": true,
+                              "message": "请输入公司名称"
+                            }
+                          ],
+                          "placeholder": "请输入公司名称"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "单行输入框",
+                    "type": 3,
+                    "default": false,
+                    "identifier": "GoInput",
+                    "props": {
+                      "label": "备注名(选填)",
+                      "name": "short_name",
+                      "value": "Test",
+                      "rules": [
+                        {
+                          "required": true,
+                          "message": "请输入备注名"
+                        }
+                      ],
+                      "placeholder": "请输入备注名(选填)"
+                    }
+                  },
+                  {
+                    "name": "按钮",
+                    "type": 3,
+                    "default": false,
+                    "identifier": "GoButton",
+                    "props": {
+                      "type": "primary",
+                      "htmlType": "submit"
+                    },
+                    "properties": [
+                      {
+                        "name": "标题文字",
+                        "prompt": "请输入标题文字",
+                        "type": "input",
+                        "key": "title",
+                        "default_val": "提交",
+                        "data": ""
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,2 +1,15 @@
-# admin-react
-基于React+Ant+Umi搭建组件实验室，用于尝试功能组件开发
+# umi project
+
+## Getting Started
+
+Install dependencies,
+
+```bash
+$ yarn
+```
+
+Start the dev server,
+
+```bash
+$ yarn start
+```

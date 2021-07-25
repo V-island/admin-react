@@ -1,0 +1,36 @@
+{
+  "code": 1,
+  "data": {
+    "commentHiddenForProposer": "",
+    "commentRequired": "",
+    "icon": "common",
+    "commentDescription": "",
+    "description": "",
+    "title": "电子小烟",
+    "items": [
+      {
+        "componentName": "TextField",
+        "props": {
+          "bizAlias": "",
+          "placeholder": "111",
+          "label": "A",
+          "id": "TextField-K2AD4O5B"
+        }
+      },
+      {
+        "componentName": "ColumnLayout",
+        "props": {
+          "notPrint": "1",
+          "label": "分栏",
+          "id": "ColumnLayout_BXN1C7ARKSO0",
+          "group": [
+            "DDSelectField_1J5Q5VDQUMQO0",
+            "TextField_QNL11BAF2XC0",
+            "DDDateField_1C0C7HJVY8LC0",
+            "NumberField_YRNEQ31N3CW0"
+          ]
+        }
+      }
+    ]
+  }
+}

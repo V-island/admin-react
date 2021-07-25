@@ -1,0 +1,20 @@
+{
+  "code": 1,
+  "data": {
+    "name": "单行输入框",
+    "type": 3,
+    "default": false,
+    "identifier": "GoInput",
+    "props": {
+      "label": "公司名称",
+      "name": "company_name",
+      "rules": [
+        {
+          "required": true,
+          "message": "请输入公司名称"
+        }
+      ],
+      "placeholder": "请输入公司名称"
+    }
+  }
+}

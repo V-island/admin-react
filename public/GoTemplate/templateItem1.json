@@ -1,0 +1,76 @@
+{
+  "code": 1,
+  "data": {
+    "name": "栅格 Row",
+    "type": 1,
+    "default": false,
+    "identifier": "GoRow",
+    "props": {
+      "className": "",
+      "gutter": [8, 8]
+    },
+    "properties": [],
+    "child": [
+      {
+        "name": "栅格 Col",
+        "type": 1,
+        "default": false,
+        "identifier": "GoCol",
+        "props": {
+          "className": "",
+          "span": 12
+        },
+        "properties": [],
+        "child": [
+          {
+            "name": "单行输入框",
+            "type": 3,
+            "default": false,
+            "identifier": "GoInput",
+            "props": {
+              "label": "姓",
+              "name": "last_name",
+              "rules": [
+                {
+                  "required": true,
+                  "message": "请输入姓"
+                }
+              ],
+              "placeholder": "请输入姓"
+            }
+          }
+        ]
+      },
+      {
+        "name": "栅格 Col",
+        "type": 1,
+        "default": false,
+        "identifier": "GoCol",
+        "props": {
+          "className": "",
+          "span": 12
+        },
+        "properties": [],
+        "child": [
+          {
+            "name": "单行输入框",
+            "type": 3,
+            "default": false,
+            "identifier": "GoInput",
+            "props": {
+              "label": "名",
+              "name": "first_name",
+              "rules": [
+                {
+                  "required": true,
+                  "message": "请输入名"
+                }
+              ],
+              "placeholder": "请输入名"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
