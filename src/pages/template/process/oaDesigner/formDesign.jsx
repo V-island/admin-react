@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { Typography, Empty } from 'antd';
 import styled from 'styled-components';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 import { uuid } from '@/utils/utils';
 import PropertyLibrary from '@/components/propertyLibrary';
 import PreviewHelper from './previewHelper';
 import ControlColumn from './controlColumn';
-
-const { Text } = Typography;
 
 const LayoutWrapper = styled.div`
   display: flex;
@@ -51,12 +49,13 @@ const SideContainer = styled.div`
 
 class FormDesign extends Component {
   state = {
-    activeItem: {},
-    schemasMap: [],
-    schemas: [],
+    placeholderProps: {},
+    activeItem: {}, // 当前选中控件
+    container: {}, // 容器树
+    containerOrder: [], // 容器组
+    tasksMap: {}, // 控件地图
+    tasksTree: [], // 表单树形图
   };
-
-  creatSchemasMap = (item) => {};
 
   selectControl = (item) => {
     const newSchemas = [...this.state.schemas];
@@ -113,22 +112,76 @@ class FormDesign extends Component {
     });
   };
 
-  onUpdateSchemas = (item) => {
-    console.log(item);
-  };
-
   // 拖拽结束事件
   onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
-
     console.log(destination, source, draggableId);
+
+    if (!destination) return;
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    )
+      return;
+
+    const start = this.state.container[source.droppableId];
+    const finish = this.state.container[destination.droppableId];
+
+    // 同级容器内拖拽
+    if (start === finish) {
+      const newTaskIds = Array.from(start.taskIds);
+      newTaskIds.splice(source.index, 1);
+      newTaskIds.splice(destination.index, 0, draggableId);
+
+      const newContainer = {
+        ...start,
+        taskIds: newTaskIds,
+      };
+
+      const newState = {
+        ...this.state,
+        container: {
+          ...this.state.container,
+          [newContainer.id]: newContainer,
+        },
+      };
+      setPlaceholderProps({});
+      this.setState(newState);
+      return;
+    }
+
+    // 非同级容器内拖拽
+    const startTaskIds = Array.from(start.taskIds);
+    startTaskIds.splice(source.index, 1);
+    const newStart = {
+      ...start,
+      taskIds: startTaskIds,
+    };
+
+    const finishTaskIds = Array.from(finish.taskIds);
+    finishTaskIds.splice(destination.index, 0, draggableId);
+    const newFinish = {
+      ...finish,
+      taskIds: finishTaskIds,
+    };
+
+    const newState = {
+      ...this.state,
+      container: {
+        ...this.state.container,
+        [newStart.id]: newStart,
+        [newFinish.id]: newFinish,
+      },
+    };
+    setPlaceholderProps({});
+    this.setState(newState);
   };
 
   render() {
-    const { activeItem, schemas } = this.state;
-
+    console.log(this.props.controlTree);
     return (
-      <DragDropContext onDragEnd={this.onDragEnd}>
+      <DndProvider backend={HTML5Backend}>
         <LayoutWrapper>
           <LayoutSide>
             <SideContainer>
@@ -143,22 +196,23 @@ class FormDesign extends Component {
           </LayoutSide>
           <LayoutContent>
             <PreviewHelper
-              schemas={schemas}
-              activeItem={activeItem}
+              tasksTree={this.state.tasksTree}
+              activeItem={this.state.activeItem}
+              placeholder={this.state.placeholderProps}
               onUpdateActive={this.onUpdateActive}
               onUpdateSchemas={this.onUpdateSchemas}
             />
           </LayoutContent>
           <LayoutConfig>
-            {Object.keys(activeItem).length == 0 || (
+            {Object.keys(this.state.activeItem).length == 0 || (
               <PropertyLibrary
-                control={activeItem}
+                control={this.state.activeItem}
                 onUpdateSelect={this.onUpdateProperty}
               />
             )}
           </LayoutConfig>
         </LayoutWrapper>
-      </DragDropContext>
+      </DndProvider>
     );
   }
 }
