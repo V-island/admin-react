@@ -24,7 +24,11 @@ export default class Column extends Component {
     return (
       <Container>
         <Title>{this.props.column.title}</Title>
-        <Droppable droppableId={this.props.column.id} type="TASK">
+        <Droppable
+          droppableId={this.props.column.id}
+          type="OADesigner"
+          isDropDisabled
+        >
           {(provided, snapshot) => (
             <TaskList
               ref={provided.innerRef}

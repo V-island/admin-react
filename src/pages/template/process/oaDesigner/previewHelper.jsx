@@ -147,7 +147,7 @@ class PreviewHelper extends Component {
     console.log(schemas);
 
     return (
-      <Droppable droppableId="root-preview" type="TASK">
+      <Droppable droppableId="root-preview" type="OADesigner">
         {(provided, snapshot) => (
           <LayoutContainer
             ref={provided.innerRef}
