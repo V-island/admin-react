@@ -13,7 +13,6 @@ class TestLayout extends Base {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    let isUnmount = false;
 
     dispatch({
       type: 'template/getTemplate',

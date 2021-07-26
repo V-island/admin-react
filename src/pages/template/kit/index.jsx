@@ -2,13 +2,10 @@ import React, { Component } from 'react';
 import { Button, Table, Switch, Tag, Space } from 'antd';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 import request from '@/utils/request';
+import { uuid } from '@/utils/utils';
 import ControlForm from './form';
 
 const { Column } = Table;
-
-const uuid = () => {
-  return Math.floor((1 + Math.random()) * 0x100000000).toString(16);
-};
 
 class Kit extends Component {
   state = {

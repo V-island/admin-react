@@ -3,7 +3,7 @@ import { Layout, Tabs, Button, Space, Result } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
 import { connect, history } from 'umi';
 import BaseSetting from './baseSetting';
-import FormDesign from './form';
+import FormDesign from './formDesign';
 
 const { Header, Content } = Layout;
 const { TabPane } = Tabs;
@@ -11,7 +11,7 @@ const { TabPane } = Tabs;
 @connect(({ template }) => ({
   template,
 }))
-class ControlForm extends Component {
+class OADesigner extends Component {
   state = {
     detail: {},
     content: [],
@@ -144,4 +144,4 @@ class ControlForm extends Component {
   }
 }
 
-export default ControlForm;
+export default OADesigner;

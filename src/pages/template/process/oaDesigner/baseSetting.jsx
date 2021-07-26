@@ -1,15 +1,29 @@
 import React, { Component } from 'react';
 import { Form, Input, Select } from 'antd';
-import Styles from './style.less';
+import styled from 'styled-components';
 
 const { Option } = Select;
+
+const Container = styled.div`
+  position: absolute;
+  top: 122px;
+  right: 0;
+  bottom: 12px;
+  left: 50%;
+  width: 660px;
+  padding: 24px;
+  overflow: auto;
+  background: #fff;
+  border-radius: 8px;
+  transform: translateX(-50%);
+`;
 
 class baseSetting extends Component {
   render() {
     const { values, onUpdateChange } = this.props;
 
     return (
-      <div className={Styles.baseSetting}>
+      <Container>
         <Form
           ref={this.formRef}
           layout="vertical"
@@ -52,7 +66,7 @@ class baseSetting extends Component {
             />
           </Form.Item>
         </Form>
-      </div>
+      </Container>
     );
   }
 }

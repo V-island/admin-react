@@ -61,6 +61,27 @@ export default defineConfig({
           path: '/template/preview',
           component: '@/pages/template/preview',
         },
+        {
+          path: '/drag',
+          routes: [
+            { exact: true, path: '/drag', redirect: '/drag/vertical' },
+            {
+              title: 'routes.vertical',
+              path: '/drag/vertical',
+              component: '@/pages/drag/vertical',
+            },
+            {
+              title: 'routes.level',
+              path: '/drag/level',
+              component: '@/pages/drag/level',
+            },
+            {
+              title: 'routes.crossRegion',
+              path: '/drag/crossRegion',
+              component: '@/pages/drag/crossRegion',
+            },
+          ],
+        },
       ],
     },
   ],

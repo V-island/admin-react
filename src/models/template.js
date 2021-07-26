@@ -154,9 +154,9 @@ const Template = {
     // 保存控件列表
     saveControlList(state, { payload }) {
       const list = [
-        { name: '布局控件', children: [] },
-        { name: '基础控件', children: [] },
-        { name: '增强控件', children: [] },
+        { id: 'layout-control', title: '布局控件', children: [] },
+        { id: 'base-control', title: '基础控件', children: [] },
+        { id: 'enhance-control', title: '增强控件', children: [] },
       ];
 
       payload.forEach((item) => {

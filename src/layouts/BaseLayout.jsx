@@ -43,7 +43,12 @@ class layout extends Component {
           <Layout>
             <Sider breakpoint="sm" collapsedWidth="80">
               <div className={styles.logo}>GoGo 实验室</div>
-              <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']}>
+              <Menu
+                theme="dark"
+                mode="inline"
+                defaultOpenKeys={['template']}
+                defaultSelectedKeys={['template', 'control']}
+              >
                 <SubMenu
                   key="template"
                   icon={<AppstoreAddOutlined />}
@@ -60,6 +65,21 @@ class layout extends Component {
                   </Menu.Item>
                   <Menu.Item key="preview">
                     <Link to="/template/preview">表单预览</Link>
+                  </Menu.Item>
+                </SubMenu>
+                <SubMenu
+                  key="drag"
+                  icon={<AppstoreAddOutlined />}
+                  title="组件拖拽"
+                >
+                  <Menu.Item key="vertical">
+                    <Link to="/drag/vertical">纵向拖拽</Link>
+                  </Menu.Item>
+                  <Menu.Item key="level">
+                    <Link to="/drag/level">水平拖拽</Link>
+                  </Menu.Item>
+                  <Menu.Item key="crossRegion">
+                    <Link to="/drag/crossRegion">跨区域区拖拽</Link>
                   </Menu.Item>
                 </SubMenu>
               </Menu>
