@@ -29,7 +29,9 @@ const Task = styled.div`
   border-radius: 8px;
   cursor: grab;
   background-color: #fff;
+  overflow: hidden;
   transition: all 0.2s ease;
+  
   opacity: ${(props) => props.isDragging} ? 0.4 : 1;
 
   &:nth-child(odd) {
@@ -42,15 +44,17 @@ const Task = styled.div`
   }
 `;
 
-const ControlTask = (props) => {
+const ControlTask = ({ task, onDrop }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'oaDesigner',
-    item: props.task,
+    item: task,
+    options: {
+      dropEffect: 'copy',
+    },
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult();
-
       if (item && dropResult) {
-        alert(`You dropped ${item.title} into ${dropResult.name}!`);
+        console.log(item, dropResult);
       }
     },
     collect: (monitor) => ({
@@ -61,7 +65,7 @@ const ControlTask = (props) => {
 
   return (
     <Task ref={drag} isDragging={isDragging}>
-      {props.task.title}
+      {task.title}
     </Task>
   );
 };
@@ -71,8 +75,8 @@ const Column = (props) => {
     <Container>
       <Title>{props.column.title}</Title>
       <TaskList>
-        {props.tasks.map((task, index) => (
-          <ControlTask key={task.id} task={task} index={index} />
+        {props.tasks.map((task) => (
+          <ControlTask key={task.id} task={task} onDrop={props.onDrop} />
         ))}
       </TaskList>
     </Container>

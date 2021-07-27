@@ -4,8 +4,8 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { uuid } from '@/utils/utils';
 import PropertyLibrary from '@/components/propertyLibrary';
-import PreviewHelper from './previewHelper';
 import ControlColumn from './controlColumn';
+import PreviewContainer from './previewContainer';
 
 const LayoutWrapper = styled.div`
   display: flex;
@@ -50,17 +50,17 @@ const SideContainer = styled.div`
 class FormDesign extends Component {
   state = {
     placeholderProps: {},
-    activeItem: {}, // 当前选中控件
+    activeCard: {}, // 当前选中控件
     container: {}, // 容器树
     containerOrder: [], // 容器组
     tasksMap: {}, // 控件地图
-    tasksTree: [], // 表单树形图
+    cardTree: [], // 表单树形图
   };
 
   selectControl = (item) => {
     const newSchemas = [...this.state.schemas];
     const { componentName, type, props } = item;
-    const activeItem = {
+    const activeCard = {
       type,
       componentName,
       props: {
@@ -69,47 +69,59 @@ class FormDesign extends Component {
       },
     };
 
-    if (this.state.activeItem.type == 1) {
-      const newActive = { ...this.state.activeItem };
+    if (this.state.activeCard.type == 1) {
+      const newActive = { ...this.state.activeCard };
       const index = newSchemas.findIndex(
         (_item) => newActive.props.id === _item.props.id,
       );
 
-      if ('children' in newActive) newActive.children.push(activeItem);
-      else newActive.children = [activeItem];
+      if ('children' in newActive) newActive.children.push(activeCard);
+      else newActive.children = [activeCard];
 
       newSchemas.splice(index, 1, {
         ...newActive,
       });
 
       this.setState({
-        activeItem: newActive,
+        activeCard: newActive,
         schemas: newSchemas,
       });
     } else {
-      newSchemas.push(activeItem);
+      newSchemas.push(activeCard);
       this.setState({
-        activeItem: activeItem,
+        activeCard: activeCard,
         schemas: newSchemas,
       });
     }
   };
 
   onUpdateProperty = (_, values) => {
-    const newItem = { ...this.state.activeItem };
+    const newItem = { ...this.state.activeCard };
     newItem.props = {
       ...newItem.props,
       ...values,
     };
     this.setState({
-      activeItem: newItem,
+      activeCard: newItem,
     });
   };
 
   onUpdateActive = (values) => {
     this.setState({
-      activeItem: values,
+      activeCard: values,
     });
+  };
+
+  handleDragEnd = (item) => {
+    console.log(item);
+    const activeCard = {
+      type,
+      componentName,
+      props: {
+        ...props,
+        id: `${componentName}_${uuid()}`,
+      },
+    };
   };
 
   // 拖拽结束事件
@@ -190,23 +202,21 @@ class FormDesign extends Component {
                   key={column.id}
                   column={column}
                   tasks={column.children}
+                  onDrop={this.handleDragEnd}
                 />
               ))}
             </SideContainer>
           </LayoutSide>
           <LayoutContent>
-            <PreviewHelper
-              tasksTree={this.state.tasksTree}
-              activeItem={this.state.activeItem}
-              placeholder={this.state.placeholderProps}
-              onUpdateActive={this.onUpdateActive}
-              onUpdateSchemas={this.onUpdateSchemas}
+            <PreviewContainer
+              cardTree={this.state.cardTree}
+              activeCard={this.state.activeCard}
             />
           </LayoutContent>
           <LayoutConfig>
-            {Object.keys(this.state.activeItem).length == 0 || (
+            {Object.keys(this.state.activeCard).length == 0 || (
               <PropertyLibrary
-                control={this.state.activeItem}
+                control={this.state.activeCard}
                 onUpdateSelect={this.onUpdateProperty}
               />
             )}
