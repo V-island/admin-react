@@ -49,50 +49,38 @@ const SideContainer = styled.div`
 
 class FormDesign extends Component {
   state = {
-    placeholderProps: {},
-    activeCard: {}, // 当前选中控件
-    container: {}, // 容器树
-    containerOrder: [], // 容器组
-    tasksMap: {}, // 控件地图
-    cardTree: [], // 表单树形图
+    activeKey: null, // 当前选中控件
+    schemaMap: {}, // 控件地图
+    schemas: [], // 容器组
   };
 
-  selectControl = (item) => {
-    const newSchemas = [...this.state.schemas];
-    const { componentName, type, props } = item;
-    const activeCard = {
+  onClickControl = (schema) => {
+    const { componentName, type, props } = schema;
+    const schemaId = `${componentName}_${uuid()}`;
+    const newSchema = {
       type,
       componentName,
       props: {
         ...props,
-        id: `${componentName}_${uuid()}`,
+        id: schemaId,
+      },
+      __ctx: {
+        parentKey: null,
+        swapKey: schemaId,
       },
     };
 
-    if (this.state.activeCard.type == 1) {
-      const newActive = { ...this.state.activeCard };
-      const index = newSchemas.findIndex(
-        (_item) => newActive.props.id === _item.props.id,
-      );
-
-      if ('children' in newActive) newActive.children.push(activeCard);
-      else newActive.children = [activeCard];
-
-      newSchemas.splice(index, 1, {
-        ...newActive,
-      });
-
-      this.setState({
-        activeCard: newActive,
-        schemas: newSchemas,
-      });
-    } else {
-      newSchemas.push(activeCard);
-      this.setState({
-        activeCard: activeCard,
-        schemas: newSchemas,
-      });
-    }
+    const newState = {
+      ...this.state,
+      activeKey: schemaId,
+      schemaMap: {
+        ...this.state.schemaMap,
+        [schemaId]: newSchema,
+      },
+      schemas: [...this.state.schemas, newSchema],
+    };
+    console.log(schema, newState);
+    this.setState(newState);
   };
 
   onUpdateProperty = (_, values) => {
@@ -106,92 +94,45 @@ class FormDesign extends Component {
     });
   };
 
-  onUpdateActive = (values) => {
+  onUpdateActive = (key) => {
     this.setState({
-      activeCard: values,
+      activeKey: key,
     });
   };
 
-  handleDragEnd = (item) => {
-    console.log(item);
-    const activeCard = {
+  handleDragEnd = (schema, result) => {
+    const { componentName, type, props } = schema;
+    const schemaId = `${componentName}_${uuid()}`;
+    const newSchema = {
       type,
       componentName,
       props: {
         ...props,
-        id: `${componentName}_${uuid()}`,
+        id: schemaId,
+      },
+      __ctx: {
+        parentKey: result.id,
+        swapKey: schemaId,
       },
     };
-  };
-
-  // 拖拽结束事件
-  onDragEnd = (result) => {
-    const { destination, source, draggableId } = result;
-    console.log(destination, source, draggableId);
-
-    if (!destination) return;
-
-    if (
-      destination.droppableId === source.droppableId &&
-      destination.index === source.index
-    )
-      return;
-
-    const start = this.state.container[source.droppableId];
-    const finish = this.state.container[destination.droppableId];
-
-    // 同级容器内拖拽
-    if (start === finish) {
-      const newTaskIds = Array.from(start.taskIds);
-      newTaskIds.splice(source.index, 1);
-      newTaskIds.splice(destination.index, 0, draggableId);
-
-      const newContainer = {
-        ...start,
-        taskIds: newTaskIds,
-      };
-
-      const newState = {
-        ...this.state,
-        container: {
-          ...this.state.container,
-          [newContainer.id]: newContainer,
-        },
-      };
-      setPlaceholderProps({});
-      this.setState(newState);
-      return;
-    }
-
-    // 非同级容器内拖拽
-    const startTaskIds = Array.from(start.taskIds);
-    startTaskIds.splice(source.index, 1);
-    const newStart = {
-      ...start,
-      taskIds: startTaskIds,
-    };
-
-    const finishTaskIds = Array.from(finish.taskIds);
-    finishTaskIds.splice(destination.index, 0, draggableId);
-    const newFinish = {
-      ...finish,
-      taskIds: finishTaskIds,
-    };
-
     const newState = {
       ...this.state,
-      container: {
-        ...this.state.container,
-        [newStart.id]: newStart,
-        [newFinish.id]: newFinish,
+      activeKey: schemaId,
+      schemaMap: {
+        ...this.state.schemaMap,
+        [schemaId]: newSchema,
       },
+      schemas: [...this.state.schemas, newSchema],
     };
-    setPlaceholderProps({});
+    console.log(schema, newState);
     this.setState(newState);
   };
 
+  onDropEnd = (dragIndex, hoverIndex) => {
+    console.log(dragIndex, hoverIndex);
+  };
+
   render() {
-    console.log(this.props.controlTree);
     return (
       <DndProvider backend={HTML5Backend}>
         <LayoutWrapper>
@@ -202,24 +143,26 @@ class FormDesign extends Component {
                   key={column.id}
                   column={column}
                   tasks={column.children}
-                  onDrop={this.handleDragEnd}
+                  onDragEnd={this.handleDragEnd}
+                  onClickControl={this.onClickControl}
                 />
               ))}
             </SideContainer>
           </LayoutSide>
           <LayoutContent>
             <PreviewContainer
-              cardTree={this.state.cardTree}
-              activeCard={this.state.activeCard}
+              schemas={this.state.schemas}
+              activeKey={this.state.activeKey}
+              onDropEnd={this.onDropEnd}
+              onUpdateActive={this.onUpdateActive}
             />
           </LayoutContent>
           <LayoutConfig>
-            {Object.keys(this.state.activeCard).length == 0 || (
-              <PropertyLibrary
-                control={this.state.activeCard}
-                onUpdateSelect={this.onUpdateProperty}
-              />
-            )}
+            <PropertyLibrary
+              activeKey={this.state.activeKey}
+              schemaMap={this.state.schemaMap}
+              onUpdateSelect={this.onUpdateProperty}
+            />
           </LayoutConfig>
         </LayoutWrapper>
       </DndProvider>

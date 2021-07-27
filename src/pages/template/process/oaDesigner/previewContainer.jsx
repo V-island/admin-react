@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Empty } from 'antd';
 import { useDrop } from 'react-dnd';
 import PreviewCard from './previewCard';
 
@@ -17,23 +18,40 @@ const Container = styled.div`
   }
 `;
 
-const PreviewContainer = ({ cardTree, activeCard, onDrop }) => {
+const PreviewContainer = ({
+  schemas,
+  activeKey,
+  onDropEnd,
+  onUpdateActive,
+}) => {
   const [{ canDrop, isOver }, drop] = useDrop(() => ({
     accept: 'oaDesigner',
     collect: (monitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
     }),
-    drop: () => ({
-      containerId: 'root',
-    }),
   }));
+
+  const EmptyCard = (schemas) => {
+    if (schemas.length == 0)
+      return (
+        <Empty style={{ margin: 'auto' }} description="点击或拖拽添加控件" />
+      );
+  };
 
   return (
     <Container ref={drop} isActive={canDrop && isOver}>
-      {cardTree.map((card, index) => (
-        <PreviewCard key={card.id} task={card} index={index} />
+      {schemas.map((schema, index) => (
+        <PreviewCard
+          key={schema.props.id}
+          schema={schema}
+          activeKey={activeKey}
+          index={index}
+          onDropEnd={onDropEnd}
+          onUpdateActive={onUpdateActive}
+        />
       ))}
+      {EmptyCard(schemas)}
     </Container>
   );
 };

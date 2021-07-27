@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { useDrag } from 'react-dnd';
 import styled from 'styled-components';
+import { uuid } from '@/utils/utils';
 
 const Container = styled.div`
   display: flex;
@@ -44,7 +45,7 @@ const Task = styled.div`
   }
 `;
 
-const ControlTask = ({ task, onDrop }) => {
+const ControlTask = ({ task, onDragEnd, onClickControl }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'oaDesigner',
     item: task,
@@ -53,9 +54,8 @@ const ControlTask = ({ task, onDrop }) => {
     },
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult();
-      if (item && dropResult) {
-        console.log(item, dropResult);
-      }
+
+      if (item && dropResult) onDragEnd(item, dropResult);
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -64,7 +64,11 @@ const ControlTask = ({ task, onDrop }) => {
   }));
 
   return (
-    <Task ref={drag} isDragging={isDragging}>
+    <Task
+      ref={drag}
+      isDragging={isDragging}
+      onClick={() => onClickControl(task)}
+    >
       {task.title}
     </Task>
   );
@@ -76,7 +80,12 @@ const Column = (props) => {
       <Title>{props.column.title}</Title>
       <TaskList>
         {props.tasks.map((task) => (
-          <ControlTask key={task.id} task={task} onDrop={props.onDrop} />
+          <ControlTask
+            key={task.id}
+            task={task}
+            onDragEnd={props.onDragEnd}
+            onClickControl={props.onClickControl}
+          />
         ))}
       </TaskList>
     </Container>

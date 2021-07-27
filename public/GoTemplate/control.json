@@ -6,7 +6,11 @@
       "title": "分栏",
       "type": 1,
       "default": false,
-      "componentName": "GoColumnLayout"
+      "componentName": "GoColumnLayout",
+      "props": {
+        "label": "分栏",
+        "required": false
+      }
     },
     {
       "id": "TextField_141b2f77f",

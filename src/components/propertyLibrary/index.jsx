@@ -33,9 +33,16 @@ const components = {
 };
 
 const PropertyLibrary = (props) => {
-  const { control } = props;
+  const { activeKey, schemaMap, onUpdateSelect } = props;
 
-  return createElement(components[control.componentName], props);
+  if (!activeKey) return null;
+
+  const control = schemaMap[activeKey];
+
+  return createElement(components[control.componentName], {
+    control,
+    onUpdateSelect,
+  });
 };
 
 export default PropertyLibrary;
