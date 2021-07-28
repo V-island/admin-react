@@ -178,7 +178,6 @@ class FormDesign extends Component {
             <PreviewContainer
               schemas={this.state.schemas}
               activeKey={this.state.activeKey}
-              findSchema={this.findSchema}
               moveSchema={this.moveSchema}
               handleDragEnd={this.handleDragEnd}
               onUpdateActive={this.onUpdateActive}

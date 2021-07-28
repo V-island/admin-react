@@ -29,7 +29,6 @@ const EmptyPrompt = styled.div`
 const PreviewContainer = ({
   schemas,
   activeKey,
-  findSchema,
   moveSchema,
   handleDragEnd,
   onUpdateActive,
@@ -37,9 +36,9 @@ const PreviewContainer = ({
   const [{ canDrop, isOver }, drop] = useDrop(
     () => ({
       accept: 'oaDesigner',
-      drop({ add, task, id, originalIndex }, monitor) {
+      drop({ add, task, id, index }, monitor) {
         const didDrop = monitor.didDrop();
-        console.log(add, task, id, originalIndex, didDrop);
+        console.log(add, task, id, index, didDrop);
         if (didDrop) return;
         if (add) handleDragEnd(task);
       },
@@ -48,17 +47,17 @@ const PreviewContainer = ({
         canDrop: monitor.canDrop(),
       }),
     }),
-    [handleDragEnd],
+    [handleDragEnd, moveSchema],
   );
 
   return (
     <Container ref={drop} isActive={canDrop && isOver}>
-      {schemas.map((schema) => (
+      {schemas.map((schema, index) => (
         <PreviewCard
           key={schema.props.id}
+          index={index}
           schema={schema}
           activeKey={activeKey}
-          findSchema={findSchema}
           onMoveSchema={moveSchema}
           onUpdateActive={onUpdateActive}
         />
