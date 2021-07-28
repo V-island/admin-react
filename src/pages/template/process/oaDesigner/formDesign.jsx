@@ -4,7 +4,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { uuid } from '@/utils/utils';
 import PropertyLibrary from '@/components/propertyLibrary';
-import ControlColumn from './controlColumn';
+import ControlList from './controlList';
 import PreviewContainer from './previewContainer';
 
 const LayoutWrapper = styled.div`
@@ -111,8 +111,9 @@ class FormDesign extends Component {
         id: schemaId,
       },
       __ctx: {
-        parentKey: result.id,
+        parentKey: result ? result.id : '',
         swapKey: schemaId,
+        swapPath: '',
       },
     };
     const newState = {
@@ -124,7 +125,33 @@ class FormDesign extends Component {
       },
       schemas: [...this.state.schemas, newSchema],
     };
-    console.log(schema, newState);
+    console.log(newState);
+    this.setState(newState);
+  };
+
+  findSchema = (id) => {
+    const schema = this.state.schemas.filter((item) => item.props.id === id)[0];
+
+    return {
+      schema,
+      index: this.state.schemas.indexOf(schema),
+    };
+  };
+
+  moveSchema = (id, atIndex) => {
+    console.log(id, atIndex);
+    const { schema, index } = this.findSchema(id);
+
+    const newSchemas = Array.from(this.state.schemas);
+    newSchemas.splice(index, 1);
+    newSchemas.splice(atIndex, 0, schema);
+
+    const newState = {
+      ...this.state,
+      activeKey: id,
+      schemas: newSchemas,
+    };
+    console.log(newState);
     this.setState(newState);
   };
 
@@ -138,12 +165,10 @@ class FormDesign extends Component {
         <LayoutWrapper>
           <LayoutSide>
             <SideContainer>
-              {this.props.controlTree.map((column) => (
-                <ControlColumn
-                  key={column.id}
-                  column={column}
-                  tasks={column.children}
-                  onDragEnd={this.handleDragEnd}
+              {this.props.controlTree.map((control) => (
+                <ControlList
+                  key={control.id}
+                  control={control}
                   onClickControl={this.onClickControl}
                 />
               ))}
@@ -153,7 +178,9 @@ class FormDesign extends Component {
             <PreviewContainer
               schemas={this.state.schemas}
               activeKey={this.state.activeKey}
-              onDropEnd={this.onDropEnd}
+              findSchema={this.findSchema}
+              moveSchema={this.moveSchema}
+              handleDragEnd={this.handleDragEnd}
               onUpdateActive={this.onUpdateActive}
             />
           </LayoutContent>

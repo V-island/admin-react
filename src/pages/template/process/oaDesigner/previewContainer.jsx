@@ -18,40 +18,54 @@ const Container = styled.div`
   }
 `;
 
+const EmptyPrompt = styled.div`
+  display: ${(props) => (props.isEmpty ? 'flex' : 'none')};
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+`;
+
 const PreviewContainer = ({
   schemas,
   activeKey,
-  onDropEnd,
+  findSchema,
+  moveSchema,
+  handleDragEnd,
   onUpdateActive,
 }) => {
-  const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    accept: 'oaDesigner',
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
+  const [{ canDrop, isOver }, drop] = useDrop(
+    () => ({
+      accept: 'oaDesigner',
+      drop({ add, task, id, originalIndex }, monitor) {
+        const didDrop = monitor.didDrop();
+        console.log(add, task, id, originalIndex, didDrop);
+        if (didDrop) return;
+        if (add) handleDragEnd(task);
+      },
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      }),
     }),
-  }));
-
-  const EmptyCard = (schemas) => {
-    if (schemas.length == 0)
-      return (
-        <Empty style={{ margin: 'auto' }} description="点击或拖拽添加控件" />
-      );
-  };
+    [handleDragEnd],
+  );
 
   return (
     <Container ref={drop} isActive={canDrop && isOver}>
-      {schemas.map((schema, index) => (
+      {schemas.map((schema) => (
         <PreviewCard
           key={schema.props.id}
           schema={schema}
           activeKey={activeKey}
-          index={index}
-          onDropEnd={onDropEnd}
+          findSchema={findSchema}
+          onMoveSchema={moveSchema}
           onUpdateActive={onUpdateActive}
         />
       ))}
-      {EmptyCard(schemas)}
+      <EmptyPrompt isEmpty={schemas.length == 0}>
+        <Empty style={{ margin: 'auto' }} description="点击或拖拽添加控件" />
+      </EmptyPrompt>
     </Container>
   );
 };

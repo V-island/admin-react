@@ -1,42 +1,31 @@
-import React, { useRef } from 'react';
-import { Typography, Space, Button, Empty } from 'antd';
+import React from 'react';
+import { Button, Empty } from 'antd';
 import styled from 'styled-components';
 import { useDrag, useDrop } from 'react-dnd';
 import { DeleteOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
-
-const ControlCard = styled.div`
+const Card = styled.div`
   position: relative;
   width: 100%;
   min-height: 38px;
   background: #fff;
-  border-left: 3px solid #fff;
   transition: 0.3s all ease;
+  border: ${(props) =>
+    props.isLayout ? '1px dashed #ccc' : '1px solid transparent'};
+  border-left-width: ${(props) => (props.isLayout ? '3px' : 0)};
+  border-left: ${(props) =>
+    props.isActive ? '3px solid #0089ff' : '3px solid #fff'};
+  border-radius: ${(props) => (props.isActive ? '0 8px 8px 0' : 0)};
+  box-shadow: ${(props) =>
+    props.isActive ? '0 1px 10px 0 rgb(226 226 226 / 50%)' : 'none'};
+  opacity: ${(props) => (props.isDragging ? 0 : 1)};
 
-  &[data-active='true'] {
-    border-left: 3px solid #0089ff;
-    border-radius: 0 8px 8px 0;
-    box-shadow: 0 1px 10px 0 rgb(226 226 226 / 50%);
-  }
-  &:hover,
-  &[data-active='true']:hover {
-    border-left: 3px solid #bfc1c2;
+  &:hover {
+    border-left: ${(props) =>
+      props.isActive ? '3px solid #0089ff' : '3px solid #bfc1c2'};
     box-shadow: 0 1px 10px 0 rgb(226 226 226 / 50%);
     cursor: grab;
   }
-`;
-
-const ContainerCard = styled(ControlCard)`
-  border: 1px dashed #ccc;
-  border-left-width: 3px;
-`;
-
-const ChildrenContainer = styled.div`
-  border: 1px dashed #ccc;
-  background: ${(props) => props.isEmpty} ? #ddeff3 : #fff;
-  padding: ${(props) => props.isEmpty} ? 20px : 10px 0;
-  color: #aaa;
 `;
 
 const Content = styled.div`
@@ -47,172 +36,119 @@ const Content = styled.div`
   background: #fff;
 `;
 
+const Container = styled.div`
+  border: 1px dashed #ccc;
+  background: ${(props) => (props.isEmpty ? '#ddeff3' : '#fff')};
+  padding: ${(props) => (props.isEmpty ? '20px' : '10px 0')};
+  color: #aaa;
+`;
+
+const EmptyPrompt = styled.div`
+  display: ${(props) => (props.isEmpty ? 'block' : 'none')};
+`;
+
+const CardTitle = styled.h4`
+  line-height: 2;
+`;
+
+const CardText = styled.p`
+  margin: 0;
+`;
+
 const ButtonGroup = styled.div`
   position: absolute;
   top: 8px;
   right: 16px;
-  display: none;
+  display: ${(props) => (props.isActive ? 'block' : 'none')};
   padding: 4px 8px;
   background: rgba(17, 31, 44, 0.04);
   border-radius: 16px;
-
-  ${ControlCard}[data-active='true'] & {
-    display: block;
-  }
 `;
 
-const LayoutContainer = ({ schema, activeKey, index, onUpdateActive }) => {
-  const EmptyCard = (schemas) => {
-    if (schemas.length == 0)
-      return <Empty style={{ margin: 'auto' }} description="点击添加控件" />;
-  };
-
-  if (!schema.children) schema.children = [];
-
-  return (
-    <ContainerCard
-      data-active={schema.props.id == activeKey}
-      onClick={() => onUpdateActive(schema.props.id)}
-    >
-      <Content>
-        <Title level={5}>{schema.props.label}</Title>
-        <ChildrenContainer isEmpty={schema.children.length == 0}>
-          {schema.children.map((_schema, _index) => (
-            <ControlContainer
-              key={_schema.props.id}
-              schema={_schema}
-              activeKey={activeKey}
-              index={_index}
-              onUpdateActive={onUpdateActive}
-            />
-          ))}
-          {EmptyCard(schema.children)}
-        </ChildrenContainer>
-      </Content>
-      <OperateTool schema={schema} />
-    </ContainerCard>
-  );
-};
-const ControlContainer = ({
-  schema,
-  activeKey,
-  index,
-  onDropEnd,
-  onUpdateActive,
-}) => {
-  const ref = useRef(null);
-  const [{ handlerId }, drop] = useDrop({
-    accept: 'oaDesigner',
-    collect(monitor) {
-      return {
-        handlerId: monitor.getHandlerId(),
-      };
-    },
-    hover(item, monitor) {
-      if (!ref.current) {
-        return;
-      }
-      const dragIndex = item.index;
-      const hoverIndex = index;
-      // Don't replace items with themselves
-      if (dragIndex === hoverIndex) {
-        return;
-      }
-      // Determine rectangle on screen
-      const hoverBoundingRect = ref.current?.getBoundingClientRect();
-      // Get vertical middle
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      // Determine mouse position
-      const clientOffset = monitor.getClientOffset();
-      // Get pixels to the top
-      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-      // Dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
-      }
-      // Dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
-      }
-      // Time to actually perform the action
-      onDropEnd(dragIndex, hoverIndex);
-      // Note: we're mutating the monitor item here!
-      // Generally it's better to avoid mutations,
-      // but it's good here for the sake of performance
-      // to avoid expensive index searches.
-      item.index = hoverIndex;
-    },
-  });
-  const [{ isDragging }, drag] = useDrag({
-    type: 'oaDesigner',
-    item: () => {
-      return { schema, index };
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
+const ControlCard = (props) => {
+  const { schema, activeKey, findSchema, onMoveSchema, onUpdateActive } = props;
+  const {
+    props: { id },
+  } = schema;
+  const originalIndex = findSchema(id).index;
+  const [{ isDragging }, drag] = useDrag(
+    () => ({
+      type: 'oaDesigner',
+      item: { id, originalIndex },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+      end: (item, monitor) => {
+        const { id: droppedId, originalIndex } = item;
+        const didDrop = monitor.didDrop();
+        if (!didDrop) onMoveSchema(droppedId, originalIndex);
+      },
     }),
-  });
-  drag(drop(ref));
+    [id, originalIndex, onMoveSchema],
+  );
+
+  const [, drop] = useDrop(
+    () => ({
+      accept: 'oaDesigner',
+      canDrop: () => false,
+      hover(props, monitor, component) {
+        console.log(props, monitor, component);
+      },
+      // hover({ id: draggedId }) {
+      //   if (draggedId !== id) {
+      //     const { index: overIndex } = findSchema(id);
+      //     onMoveSchema(draggedId, overIndex);
+      //   }
+      // },
+    }),
+    [findSchema, onMoveSchema],
+  );
+
   return (
-    <ControlCard
-      ref={ref}
-      data-handler-id={handlerId}
-      data-active={schema.props.id == activeKey}
+    <Card
+      ref={(node) => drag(drop(node))}
+      isLayout={schema.type == 1}
+      isDragging={isDragging}
+      isActive={schema.props.id == activeKey}
       onClick={() => onUpdateActive(schema.props.id)}
     >
       <Content>
-        <Title level={5}>{schema.props.label}</Title>
-        <Text>{schema.props.placeholder}</Text>
+        <CardTitle>{schema.props.label}</CardTitle>
+        <CardChildren {...props} />
       </Content>
-      <OperateTool schema={schema} />
-    </ControlCard>
-  );
-};
-const OperateTool = (props) => {
-  return (
-    <ButtonGroup>
-      <Space>
+      <ButtonGroup isActive={schema.props.id == activeKey}>
         <Button
           type="link"
           size="small"
           icon={<DeleteOutlined />}
           onClick={() => {}}
         />
-      </Space>
-    </ButtonGroup>
+      </ButtonGroup>
+    </Card>
   );
 };
-const PreviewCard = ({
-  schema,
-  activeKey,
-  index,
-  onDropEnd,
-  onUpdateActive,
-}) => {
-  if (schema.type == 1)
-    return (
-      <LayoutContainer
-        schema={schema}
-        activeKey={activeKey}
-        index={index}
-        onDropEnd={onDropEnd}
-        onUpdateActive={onUpdateActive}
-      />
-    );
-  else
-    return (
-      <ControlContainer
-        schema={schema}
-        activeKey={activeKey}
-        index={index}
-        onDropEnd={onDropEnd}
-        onUpdateActive={onUpdateActive}
-      />
-    );
+
+const CardChildren = (props) => {
+  const { schema } = props;
+
+  if (schema.type != 1) return <CardText>{schema.props.placeholder}</CardText>;
+
+  const newSchemas = schema.children || [];
+
+  return (
+    <Container isEmpty={newSchemas.length == 0}>
+      {newSchemas.map((item) => (
+        <ControlCard {...props} key={item.props.id} schema={item} />
+      ))}
+      <EmptyPrompt isEmpty={newSchemas.length == 0}>
+        <Empty style={{ margin: 'auto' }} description="点击添加控件" />
+      </EmptyPrompt>
+    </Container>
+  );
+};
+
+const PreviewCard = (props) => {
+  return <ControlCard {...props} />;
 };
 
 export default PreviewCard;

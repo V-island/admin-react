@@ -32,34 +32,31 @@ const Task = styled.div`
   background-color: #fff;
   overflow: hidden;
   transition: all 0.2s ease;
-  
-  opacity: ${(props) => props.isDragging} ? 0.4 : 1;
+
+  opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
 
   &:nth-child(odd) {
     margin-right: 8px;
   }
 
-  &:hover{
+  &:hover {
     border-color: #0089ff;
     box-shadow: 0 4px 8px 0 rgb(17 31 44 / 8%);
   }
 `;
 
-const ControlTask = ({ task, onDragEnd, onClickControl }) => {
+const ControlTask = ({ task, onClickControl }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'oaDesigner',
-    item: task,
+    item: {
+      task,
+      add: true,
+    },
     options: {
       dropEffect: 'copy',
     },
-    end: (item, monitor) => {
-      const dropResult = monitor.getDropResult();
-
-      if (item && dropResult) onDragEnd(item, dropResult);
-    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
-      handlerId: monitor.getHandlerId(),
     }),
   }));
 
@@ -74,17 +71,18 @@ const ControlTask = ({ task, onDragEnd, onClickControl }) => {
   );
 };
 
-const Column = (props) => {
+const ControlList = ({ control, onClickControl }) => {
+  const tasks = control.children || [];
+
   return (
     <Container>
-      <Title>{props.column.title}</Title>
+      <Title>{control.title}</Title>
       <TaskList>
-        {props.tasks.map((task) => (
+        {tasks.map((task) => (
           <ControlTask
             key={task.id}
             task={task}
-            onDragEnd={props.onDragEnd}
-            onClickControl={props.onClickControl}
+            onClickControl={onClickControl}
           />
         ))}
       </TaskList>
@@ -92,4 +90,4 @@ const Column = (props) => {
   );
 };
 
-export default Column;
+export default ControlList;
