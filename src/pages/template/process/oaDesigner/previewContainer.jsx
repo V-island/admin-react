@@ -30,24 +30,24 @@ const PreviewContainer = ({
   schemas,
   activeKey,
   moveSchema,
-  handleDragEnd,
+  handleDragAdd,
   onUpdateActive,
 }) => {
   const [{ canDrop, isOver }, drop] = useDrop(
     () => ({
       accept: 'oaDesigner',
-      drop({ add, task, id, index }, monitor) {
+      drop(item, monitor) {
         const didDrop = monitor.didDrop();
-        console.log(add, task, id, index, didDrop);
+        console.log(item, didDrop);
         if (didDrop) return;
-        if (add) handleDragEnd(task);
+        if (item.add) return handleDragAdd(item);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
         canDrop: monitor.canDrop(),
       }),
     }),
-    [handleDragEnd, moveSchema],
+    [handleDragAdd, moveSchema],
   );
 
   return (

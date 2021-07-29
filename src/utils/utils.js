@@ -28,4 +28,28 @@ const funDownload = (content, filename) => {
   document.body.removeChild(eleLink);
 };
 
+/**
+ * 将一维的扁平数组转换为多层级对象
+ * @param {[type]} list 一维数组，数组中每一个元素需包含id和parent_id两个属性
+ * @return {[type]} tree 多层级树状结构
+ */
+const buildTree = (list) => {
+  let temp = {};
+  let tree = {};
+  for (let i in list) {
+    temp[list[i].id] = list[i];
+  }
+  for (let i in temp) {
+    if (temp[i].parent_id) {
+      if (!temp[temp[i].parent_id].children) {
+        temp[temp[i].parent_id].children = new Object();
+      }
+      temp[temp[i].parent_id].children[temp[i].id] = temp[i];
+    } else {
+      tree[temp[i].id] = temp[i];
+    }
+  }
+  return tree;
+};
+
 export { errorMsgCode, uuid, funDownload };

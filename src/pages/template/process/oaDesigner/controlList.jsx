@@ -64,23 +64,22 @@ const ControlTask = ({ task, onClickControl }) => {
     <Task
       ref={drag}
       isDragging={isDragging}
-      onClick={() => onClickControl(task)}
+      onClick={() => onClickControl(task, 'click')}
     >
-      {task.title}
+      {task.props.label}
     </Task>
   );
 };
 
 const ControlList = ({ control, onClickControl }) => {
   const tasks = control.children || [];
-
   return (
     <Container>
       <Title>{control.title}</Title>
       <TaskList>
-        {tasks.map((task) => (
+        {tasks.map((task, index) => (
           <ControlTask
-            key={task.id}
+            key={index}
             task={task}
             onClickControl={onClickControl}
           />

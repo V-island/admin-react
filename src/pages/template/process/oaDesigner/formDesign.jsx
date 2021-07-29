@@ -54,33 +54,86 @@ class FormDesign extends Component {
     schemas: [], // 容器组
   };
 
-  onClickControl = (schema) => {
-    const { componentName, type, props } = schema;
-    const schemaId = `${componentName}_${uuid()}`;
-    const newSchema = {
-      type,
-      componentName,
-      props: {
-        ...props,
-        id: schemaId,
-      },
-      __ctx: {
-        parentKey: null,
-        swapKey: schemaId,
-      },
-    };
+  createSchemaMap = (schemas, parentKey, path) => {
+    const map = {};
 
-    const newState = {
-      ...this.state,
-      activeKey: schemaId,
-      schemaMap: {
-        ...this.state.schemaMap,
-        [schemaId]: newSchema,
-      },
-      schemas: [...this.state.schemas, newSchema],
+    schemas.forEach((item, index) => {
+      const newPath = `${path}${index}`;
+
+      if (Array.isArray(item.children)) {
+        const children = this.traverseSchemas(
+          item.children,
+          item.props.id,
+          `${newPath}/children/`,
+        );
+        map = { ...map, children };
+      }
+
+      map[item.props.id] = {
+        ...item,
+        _ctx: {
+          parentKey: parentKey,
+          swapKey: item.props.id,
+          swapPath: newPath,
+        },
+      };
+    });
+
+    return map;
+  };
+
+  traverseSchemas = (pop) => {};
+
+  onClickControl = (schema, event) => {
+    const schemaId = `${schema.componentName}_${uuid()}`;
+    const newSchema = { ...schema };
+    newSchema.props.id = schemaId;
+
+    // 控件容器为空
+    if (!this.state.activeKey) {
+      const newSchemas = [...this.state.schemas, newSchema];
+      const newSchemaMap = this.createSchemaMap(newSchemas, '', '/');
+      const newState = {
+        ...this.state,
+        activeKey: schemaId,
+        schemaMap: newSchemaMap,
+        schemas: newSchemas,
+      };
+      this.setState(newState);
+      return;
+    }
+
+    // 点击添加控件
+    if (event == 'click') {
+      console.log(schema, this.state.activeKey);
+      const startId = this.state.activeKey;
+      const {
+        _ctx: { swapPath },
+      } = this.state.schemaMap[startId];
+      console.log(startSchema);
+      const newSchemas = Array.from(this.state.schemas);
+      const newState = {
+        ...this.state,
+        activeKey: schemaId,
+        schemaMap: {
+          [schemaId]: newSchema,
+        },
+        schemas: [newSchema],
+      };
+
+      console.log(newState);
+      // this.setState(newState);
+      return;
+    }
+
+    const newTaskIds = Array.from(start.taskIds);
+    newTaskIds.splice(source.index, 1);
+    newTaskIds.splice(destination.index, 0, draggableId);
+
+    const newColumn = {
+      ...start,
+      taskIds: newTaskIds,
     };
-    console.log(schema, newState);
-    this.setState(newState);
   };
 
   onUpdateProperty = (_, values) => {
@@ -98,6 +151,14 @@ class FormDesign extends Component {
     this.setState({
       activeKey: key,
     });
+  };
+
+  handleDragAdd = ({ task, index, parentKey }) => {
+    const schemaId = `${componentName}_${uuid()}`;
+    const newSchema = { ...task };
+    newSchema.props.id = schemaId;
+
+    console.log(task, index, newSchema, parentKey);
   };
 
   handleDragEnd = (schema, result) => {
@@ -179,7 +240,7 @@ class FormDesign extends Component {
               schemas={this.state.schemas}
               activeKey={this.state.activeKey}
               moveSchema={this.moveSchema}
-              handleDragEnd={this.handleDragEnd}
+              handleDragAdd={this.handleDragAdd}
               onUpdateActive={this.onUpdateActive}
             />
           </LayoutContent>

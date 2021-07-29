@@ -155,8 +155,14 @@ const CardChildren = (props) => {
 
   return (
     <Container isEmpty={newSchemas.length == 0}>
-      {newSchemas.map((item) => (
-        <ControlCard {...props} key={item.props.id} schema={item} />
+      {newSchemas.map((item, index) => (
+        <ControlCard
+          {...props}
+          key={item.props.id}
+          parentKey={item.props.id}
+          schema={item}
+          index={index}
+        />
       ))}
       <EmptyPrompt isEmpty={newSchemas.length == 0}>
         <Empty style={{ margin: 'auto' }} description="点击添加控件" />

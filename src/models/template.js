@@ -160,7 +160,12 @@ const Template = {
       ];
 
       payload.forEach((item) => {
-        list[item.type - 1].children.push(item);
+        const { componentName, type, props } = item;
+        list[item.type - 1].children.push({
+          type,
+          componentName,
+          props,
+        });
       });
 
       return {
