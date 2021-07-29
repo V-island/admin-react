@@ -6,12 +6,11 @@ import PreviewCard from './previewCard';
 
 const Container = styled.div`
   width: 600px;
-  height: 100%;
-  margin: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  backgroundC-color: ${(props) => props.isActive} ? #298dff : #eee;
+  backgroundc-color: ${(props) => (props.isActive ? '#298dff' : '#eee')};
+  margin: ${(props) => (props.isEmpty ? 'auto' : 0)};
 
   & > * {
     margin: 8px;
@@ -49,9 +48,12 @@ const PreviewContainer = ({
     }),
     [handleDragAdd, moveSchema],
   );
-
   return (
-    <Container ref={drop} isActive={canDrop && isOver}>
+    <Container
+      ref={drop}
+      isActive={canDrop && isOver}
+      isEmpty={schemas.length == 0}
+    >
       {schemas.map((schema, index) => (
         <PreviewCard
           key={schema.props.id}

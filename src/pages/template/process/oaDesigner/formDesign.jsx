@@ -61,7 +61,7 @@ class FormDesign extends Component {
       const newPath = `${path}${index}`;
 
       if (Array.isArray(item.children)) {
-        const children = this.traverseSchemas(
+        const children = this.createSchemaMap(
           item.children,
           item.props.id,
           `${newPath}/children/`,
@@ -82,15 +82,27 @@ class FormDesign extends Component {
     return map;
   };
 
-  traverseSchemas = (pop) => {};
+  traverseSchemas = (schemas, path, event, schema) => {
+    if (path.length == 1) {
+      const index = Number(path.join());
+
+      if (event == 'click') schemas.splice(index + 1, 0, schema);
+
+      if (event == 'add') schemas.splice(index, 0, schema);
+
+      if (event == 'remove') schemas.splice(index, 1);
+    } else {
+      this.traverseSchemas(schemas[path[0]], path.shift(), event, schema);
+    }
+  };
 
   onClickControl = (schema, event) => {
+    const activeId = this.state.activeKey;
     const schemaId = `${schema.componentName}_${uuid()}`;
-    const newSchema = { ...schema };
-    newSchema.props.id = schemaId;
+    const newSchema = { ...schema, props: { ...schema.props, id: schemaId } };
 
     // 控件容器为空
-    if (!this.state.activeKey) {
+    if (!activeId) {
       const newSchemas = [...this.state.schemas, newSchema];
       const newSchemaMap = this.createSchemaMap(newSchemas, '', '/');
       const newState = {
@@ -105,35 +117,29 @@ class FormDesign extends Component {
 
     // 点击添加控件
     if (event == 'click') {
-      console.log(schema, this.state.activeKey);
-      const startId = this.state.activeKey;
       const {
         _ctx: { swapPath },
-      } = this.state.schemaMap[startId];
-      console.log(startSchema);
-      const newSchemas = Array.from(this.state.schemas);
+      } = this.state.schemaMap[activeId];
+      const newSchemas = [...this.state.schemas];
+
+      this.traverseSchemas(
+        newSchemas,
+        swapPath.split('/').slice(1),
+        event,
+        newSchema,
+      );
+
+      const newSchemaMap = this.createSchemaMap(newSchemas, '', '/');
       const newState = {
         ...this.state,
         activeKey: schemaId,
-        schemaMap: {
-          [schemaId]: newSchema,
-        },
-        schemas: [newSchema],
+        schemaMap: newSchemaMap,
+        schemas: newSchemas,
       };
 
-      console.log(newState);
-      // this.setState(newState);
+      this.setState(newState);
       return;
     }
-
-    const newTaskIds = Array.from(start.taskIds);
-    newTaskIds.splice(source.index, 1);
-    newTaskIds.splice(destination.index, 0, draggableId);
-
-    const newColumn = {
-      ...start,
-      taskIds: newTaskIds,
-    };
   };
 
   onUpdateProperty = (_, values) => {
