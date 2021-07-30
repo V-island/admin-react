@@ -45,43 +45,50 @@ const Task = styled.div`
   }
 `;
 
-const ControlTask = ({ task, onClickControl }) => {
-  const [{ isDragging }, drag] = useDrag(() => ({
-    type: 'oaDesigner',
-    item: {
-      task,
-      add: true,
-    },
-    options: {
-      dropEffect: 'copy',
-    },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
+const ControlTask = ({ schema, onAddControl }) => {
+  const [{ isDragging }, drag] = useDrag(
+    () => ({
+      type: 'oaDesigner',
+      item: { schema },
+      options: {
+        dropEffect: 'copy',
+      },
+      end(item, monitor) {
+        const dropResult = monitor.getDropResult();
+        if (item && dropResult) {
+          console.log('drag', item, dropResult);
+          onAddControl(item.schema, 'add', item.index, dropResult.id);
+        }
+      },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
     }),
-  }));
+    [schema, onAddControl],
+  );
 
   return (
     <Task
       ref={drag}
       isDragging={isDragging}
-      onClick={() => onClickControl(task, 'click')}
+      onClick={() => onAddControl(schema, 'click')}
     >
-      {task.props.label}
+      {schema.props.label}
     </Task>
   );
 };
 
-const ControlList = ({ control, onClickControl }) => {
-  const tasks = control.children || [];
+const ControlList = ({ control, onAddControl }) => {
+  const schemas = control.children || [];
   return (
     <Container>
       <Title>{control.title}</Title>
       <TaskList>
-        {tasks.map((task, index) => (
+        {schemas.map((schema, index) => (
           <ControlTask
             key={index}
-            task={task}
-            onClickControl={onClickControl}
+            schema={schema}
+            onAddControl={onAddControl}
           />
         ))}
       </TaskList>

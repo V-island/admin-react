@@ -67,21 +67,14 @@ const ButtonGroup = styled.div`
 
 const ControlCard = (props) => {
   const ref = useRef(null);
-  const {
-    schema,
-    activeKey,
-    parentKey,
-    index,
-    onMoveSchema,
-    onUpdateActive,
-  } = props;
+  const { schema, activeKey, index, onMoveSchema, onUpdateActive } = props;
   const {
     props: { id },
   } = schema;
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: 'oaDesigner',
-      item: { id, parentKey, index },
+      item: { id, index },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
@@ -97,6 +90,9 @@ const ControlCard = (props) => {
   const [{ handlerId }, drop] = useDrop(
     () => ({
       accept: 'oaDesigner',
+      drop: () => ({
+        id: id,
+      }),
       collect: (monitor) => ({
         handlerId: monitor.getHandlerId(),
       }),
@@ -114,12 +110,12 @@ const ControlCard = (props) => {
         const hoverClientY = clientOffset.y - hoverBoundingRect.top;
         if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
 
-        console.log(dragIndex, hoverIndex);
+        console.log(item, dragIndex, hoverIndex);
 
         item.index = hoverIndex;
       },
     }),
-    [parentKey, onMoveSchema],
+    [id, onMoveSchema],
   );
   drag(drop(ref));
   return (
@@ -165,7 +161,7 @@ const CardChildren = (props) => {
         />
       ))}
       <EmptyPrompt isEmpty={newSchemas.length == 0}>
-        <Empty style={{ margin: 'auto' }} description="点击添加控件" />
+        <Empty style={{ margin: 'auto' }} description="可拖入多个组件" />
       </EmptyPrompt>
     </Container>
   );

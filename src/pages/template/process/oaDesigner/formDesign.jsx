@@ -28,9 +28,7 @@ const LayoutContent = styled.div`
   flex: 1;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
   background: #eee;
-  padding: 20px;
 `;
 
 const LayoutConfig = styled.div`
@@ -96,13 +94,13 @@ class FormDesign extends Component {
     }
   };
 
-  onClickControl = (schema, event) => {
-    const activeId = this.state.activeKey;
+  onAddControl = (schema, event, index, parentKey) => {
+    const activeId = event == 'add' ? parentKey : this.state.activeKey;
     const schemaId = `${schema.componentName}_${uuid()}`;
     const newSchema = { ...schema, props: { ...schema.props, id: schemaId } };
 
     // 控件容器为空
-    if (!activeId) {
+    if (!this.state.activeKey) {
       const newSchemas = [...this.state.schemas, newSchema];
       const newSchemaMap = this.createSchemaMap(newSchemas, '', '/');
       const newState = {
@@ -115,31 +113,28 @@ class FormDesign extends Component {
       return;
     }
 
-    // 点击添加控件
-    if (event == 'click') {
-      const {
-        _ctx: { swapPath },
-      } = this.state.schemaMap[activeId];
-      const newSchemas = [...this.state.schemas];
+    const newSchemas = [...this.state.schemas];
+    const swapPath = activeId
+      ? this.state.schemaMap[activeId]._ctx.swapPath
+      : `/${index}`;
 
-      this.traverseSchemas(
-        newSchemas,
-        swapPath.split('/').slice(1),
-        event,
-        newSchema,
-      );
+    this.traverseSchemas(
+      newSchemas,
+      swapPath.split('/').slice(1),
+      event,
+      newSchema,
+    );
 
-      const newSchemaMap = this.createSchemaMap(newSchemas, '', '/');
-      const newState = {
-        ...this.state,
-        activeKey: schemaId,
-        schemaMap: newSchemaMap,
-        schemas: newSchemas,
-      };
-
-      this.setState(newState);
-      return;
-    }
+    const newSchemaMap = this.createSchemaMap(newSchemas, '', '/');
+    const newState = {
+      ...this.state,
+      activeKey: schemaId,
+      schemaMap: newSchemaMap,
+      schemas: newSchemas,
+    };
+    console.log(newState);
+    this.setState(newState);
+    return;
   };
 
   onUpdateProperty = (_, values) => {
@@ -159,10 +154,11 @@ class FormDesign extends Component {
     });
   };
 
-  handleDragAdd = ({ task, index, parentKey }) => {
-    const schemaId = `${componentName}_${uuid()}`;
-    const newSchema = { ...task };
-    newSchema.props.id = schemaId;
+  handleDragAdd = (schema, parentKey, event) => {
+    if (event == 'add') {
+      const schemaId = `${schema.componentName}_${uuid()}`;
+      const newSchema = { ...schema, props: { ...schema.props, id: schemaId } };
+    }
 
     console.log(task, index, newSchema, parentKey);
   };
@@ -236,7 +232,7 @@ class FormDesign extends Component {
                 <ControlList
                   key={control.id}
                   control={control}
-                  onClickControl={this.onClickControl}
+                  onAddControl={this.onAddControl}
                 />
               ))}
             </SideContainer>
@@ -246,7 +242,7 @@ class FormDesign extends Component {
               schemas={this.state.schemas}
               activeKey={this.state.activeKey}
               moveSchema={this.moveSchema}
-              handleDragAdd={this.handleDragAdd}
+              onAddControl={this.onAddControl}
               onUpdateActive={this.onUpdateActive}
             />
           </LayoutContent>

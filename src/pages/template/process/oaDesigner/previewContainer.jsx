@@ -5,11 +5,11 @@ import { useDrop } from 'react-dnd';
 import PreviewCard from './previewCard';
 
 const Container = styled.div`
-  width: 600px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  backgroundc-color: ${(props) => (props.isActive ? '#298dff' : '#eee')};
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: ${(props) => (props.isActive ? '#298dff' : '#eee')};
   margin: ${(props) => (props.isEmpty ? 'auto' : 0)};
 
   & > * {
@@ -29,7 +29,7 @@ const PreviewContainer = ({
   schemas,
   activeKey,
   moveSchema,
-  handleDragAdd,
+  onAddControl,
   onUpdateActive,
 }) => {
   const [{ canDrop, isOver }, drop] = useDrop(
@@ -37,16 +37,14 @@ const PreviewContainer = ({
       accept: 'oaDesigner',
       drop(item, monitor) {
         const didDrop = monitor.didDrop();
-        console.log(item, didDrop);
         if (didDrop) return;
-        if (item.add) return handleDragAdd(item);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
         canDrop: monitor.canDrop(),
       }),
     }),
-    [handleDragAdd, moveSchema],
+    [onAddControl, moveSchema],
   );
   return (
     <Container
