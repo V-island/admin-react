@@ -9,8 +9,11 @@ const Container = styled.div`
   height: 100%;
   overflow-y: auto;
   padding: 20px;
-  background-color: ${(props) => (props.isActive ? '#298dff' : '#eee')};
+  border: 1px dashed transparent;
+  border-color: ${(props) => (props.isOver ? '#298dff' : 'transparent')};
+  background-color: #eee;
   margin: ${(props) => (props.isEmpty ? 'auto' : 0)};
+  transition: 0.3s all ease;
 
   & > * {
     margin: 8px;
@@ -32,7 +35,7 @@ const PreviewContainer = ({
   onAddControl,
   onUpdateActive,
 }) => {
-  const [{ canDrop, isOver }, drop] = useDrop(
+  const [{ canDrop, isOver, isOverCurrent }, drop] = useDrop(
     () => ({
       accept: 'oaDesigner',
       drop(item, monitor) {
@@ -42,6 +45,7 @@ const PreviewContainer = ({
       collect: (monitor) => ({
         isOver: monitor.isOver(),
         canDrop: monitor.canDrop(),
+        isOverCurrent: monitor.isOver({ shallow: true }),
       }),
     }),
     [onAddControl, moveSchema],
@@ -49,7 +53,7 @@ const PreviewContainer = ({
   return (
     <Container
       ref={drop}
-      isActive={canDrop && isOver}
+      isOver={canDrop && isOver && isOverCurrent}
       isEmpty={schemas.length == 0}
     >
       {schemas.map((schema, index) => (

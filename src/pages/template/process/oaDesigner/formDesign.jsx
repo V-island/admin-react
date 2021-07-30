@@ -64,7 +64,11 @@ class FormDesign extends Component {
           item.props.id,
           `${newPath}/children/`,
         );
-        map = { ...map, children };
+        for (const key in children) {
+          if (Object.hasOwnProperty.call(children, key)) {
+            map[key] = children[key];
+          }
+        }
       }
 
       map[item.props.id] = {
@@ -83,15 +87,21 @@ class FormDesign extends Component {
   traverseSchemas = (schemas, path, event, schema) => {
     if (path.length == 1) {
       const index = Number(path.join());
-
       if (event == 'click') schemas.splice(index + 1, 0, schema);
 
-      if (event == 'add') schemas.splice(index, 0, schema);
+      if (event == 'add' && schemas.length > 0)
+        schemas.splice(index, 0, schema);
+
+      if (event == 'add' && schemas.length == 0) schemas.push(schema);
 
       if (event == 'remove') schemas.splice(index, 1);
     } else {
-      this.traverseSchemas(schemas[path[0]], path.shift(), event, schema);
+      const key = path[0];
+      const newSchemas = schemas[key] || [];
+      path.shift();
+      schemas[key] = this.traverseSchemas(newSchemas, path, event, schema);
     }
+    return schemas;
   };
 
   onAddControl = (schema, event, index, parentKey) => {
@@ -112,19 +122,20 @@ class FormDesign extends Component {
       this.setState(newState);
       return;
     }
+    console.log(newSchema, activeId, event, index, parentKey);
+    const schemas = [...this.state.schemas];
+    const startSchema = activeId ? this.state.schemaMap[activeId] : {};
+    const swapPath = activeId ? startSchema._ctx.swapPath : `/${index}`;
+    const newSwapPath =
+      startSchema.type == 1 ? `${swapPath}/children/${index}` : swapPath;
 
-    const newSchemas = [...this.state.schemas];
-    const swapPath = activeId
-      ? this.state.schemaMap[activeId]._ctx.swapPath
-      : `/${index}`;
-
-    this.traverseSchemas(
-      newSchemas,
-      swapPath.split('/').slice(1),
+    const newSchemas = this.traverseSchemas(
+      schemas,
+      newSwapPath.split('/').slice(1),
       event,
       newSchema,
     );
-
+    console.log(newSchemas);
     const newSchemaMap = this.createSchemaMap(newSchemas, '', '/');
     const newState = {
       ...this.state,

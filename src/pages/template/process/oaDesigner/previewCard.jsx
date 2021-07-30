@@ -12,10 +12,11 @@ const Card = styled.div`
   transition: 0.3s all ease;
   border: ${(props) =>
     props.isLayout ? '1px dashed #ccc' : '1px solid transparent'};
-  border-left-width: ${(props) => (props.isLayout ? '3px' : 0)};
-  border-left: ${(props) =>
-    props.isActive ? '3px solid #0089ff' : '3px solid #fff'};
-  border-radius: ${(props) => (props.isActive ? '0 8px 8px 0' : 0)};
+  border-left: ${(props) => {
+    if (props.isActive) return '3px solid #0089ff';
+    if (props.isLayout) return '3px dashed #ccc';
+    return '3px solid #fff';
+  }};
   box-shadow: ${(props) =>
     props.isActive ? '0 1px 10px 0 rgb(226 226 226 / 50%)' : 'none'};
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
@@ -37,10 +38,16 @@ const Content = styled.div`
 `;
 
 const Container = styled.div`
-  border: 1px dashed #ccc;
+  border: ${(props) =>
+    props.isOver ? '1px dashed #0089ff' : '1px dashed #ccc'};
   background: ${(props) => (props.isEmpty ? '#ddeff3' : '#fff')};
   padding: ${(props) => (props.isEmpty ? '20px' : '10px 0')};
   color: #aaa;
+  transition: 0.3s all ease;
+
+  & > * {
+    margin: 8px 0;
+  }
 `;
 
 const EmptyPrompt = styled.div`
@@ -149,8 +156,24 @@ const CardChildren = (props) => {
 
   const newSchemas = schema.children || [];
 
+  const [{ canDrop, isOver }, drop] = useDrop(() => ({
+    accept: 'oaDesigner',
+    drop(item, monitor) {
+      const didDrop = monitor.didDrop();
+      console.log(item, didDrop);
+      if (didDrop) return;
+    },
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  }));
   return (
-    <Container isEmpty={newSchemas.length == 0}>
+    <Container
+      ref={drop}
+      isOver={isOver && canDrop}
+      isEmpty={newSchemas.length == 0}
+    >
       {newSchemas.map((item, index) => (
         <ControlCard
           {...props}
