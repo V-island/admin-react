@@ -84,13 +84,13 @@ class FormDesign extends Component {
     return map;
   };
 
-  traverseSchemas = (schemas, path, event, schema) => {
+  findSchemas = (schemas, path, event, schema) => {
     if (path.length == 1) {
       const index = Number(path.join());
       if (event == 'click') schemas.splice(index + 1, 0, schema);
 
       if (event == 'add' && schemas.length > 0)
-        schemas.splice(index, 0, schema);
+        schemas.splice(index + 1, 0, schema);
 
       if (event == 'add' && schemas.length == 0) schemas.push(schema);
 
@@ -99,9 +99,33 @@ class FormDesign extends Component {
       const key = path[0];
       const newSchemas = schemas[key] || [];
       path.shift();
-      schemas[key] = this.traverseSchemas(newSchemas, path, event, schema);
+      schemas[key] = this.findSchemas(newSchemas, path, event, schema);
     }
     return schemas;
+  };
+
+  getActionId = (schemaMap, parentId, path) => {
+    const index = Number(path.pop());
+    const parentSchemas =
+      parentId !== '' ? schemaMap[parentId].children : Object.keys(schemaMap);
+    const parentIndex =
+      parentSchemas.length > 0
+        ? parentSchemas.length - 1
+        : parentSchemas.length;
+
+    if (parentIndex == 0) return parentId;
+    if (parentIndex == index)
+      return parentId !== ''
+        ? parentSchemas[index].props.id
+        : parentSchemas[index];
+    if (parentIndex < index)
+      return parentId !== ''
+        ? parentSchemas[parentIndex].props.id
+        : parentSchemas[parentIndex];
+    if (parentIndex > index)
+      return parentId !== ''
+        ? parentSchemas[index + 1].props.id
+        : parentSchemas[index + 1];
   };
 
   onAddControl = (schema, event, index, parentKey) => {
@@ -122,20 +146,19 @@ class FormDesign extends Component {
       this.setState(newState);
       return;
     }
-    console.log(newSchema, activeId, event, index, parentKey);
     const schemas = [...this.state.schemas];
     const startSchema = activeId ? this.state.schemaMap[activeId] : {};
     const swapPath = activeId ? startSchema._ctx.swapPath : `/${index}`;
     const newSwapPath =
-      startSchema.type == 1 ? `${swapPath}/children/${index}` : swapPath;
-
-    const newSchemas = this.traverseSchemas(
+      startSchema.type == 1 && event == 'add'
+        ? `${swapPath}/children/${index}`
+        : swapPath;
+    const newSchemas = this.findSchemas(
       schemas,
       newSwapPath.split('/').slice(1),
       event,
       newSchema,
     );
-    console.log(newSchemas);
     const newSchemaMap = this.createSchemaMap(newSchemas, '', '/');
     const newState = {
       ...this.state,
@@ -143,7 +166,26 @@ class FormDesign extends Component {
       schemaMap: newSchemaMap,
       schemas: newSchemas,
     };
-    console.log(newState);
+    this.setState(newState);
+    return;
+  };
+
+  onRemoveControl = (schemaId) => {
+    const schemas = [...this.state.schemas];
+    const {
+      _ctx: { swapPath, parentKey },
+    } = this.state.schemaMap[schemaId];
+    const newSwapPath = swapPath.split('/').slice(1);
+    const newSchemas = this.findSchemas(schemas, newSwapPath, 'remove');
+    const newSchemaMap = this.createSchemaMap(newSchemas, '', '/');
+    const newActiveId = this.getActionId(newSchemaMap, parentKey, newSwapPath);
+    const newState = {
+      ...this.state,
+      activeKey: newActiveId,
+      schemaMap: newSchemaMap,
+      schemas: newSchemas,
+    };
+
     this.setState(newState);
     return;
   };
@@ -254,6 +296,7 @@ class FormDesign extends Component {
               activeKey={this.state.activeKey}
               moveSchema={this.moveSchema}
               onAddControl={this.onAddControl}
+              onRemoveControl={this.onRemoveControl}
               onUpdateActive={this.onUpdateActive}
             />
           </LayoutContent>

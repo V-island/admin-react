@@ -53,13 +53,6 @@ const ControlTask = ({ schema, onAddControl }) => {
       options: {
         dropEffect: 'copy',
       },
-      end(item, monitor) {
-        const dropResult = monitor.getDropResult();
-        if (item && dropResult) {
-          console.log('drag', item, dropResult);
-          onAddControl(item.schema, 'add', item.index, dropResult.id);
-        }
-      },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),

@@ -33,6 +33,7 @@ const PreviewContainer = ({
   activeKey,
   moveSchema,
   onAddControl,
+  onRemoveControl,
   onUpdateActive,
 }) => {
   const [{ canDrop, isOver, isOverCurrent }, drop] = useDrop(
@@ -40,7 +41,13 @@ const PreviewContainer = ({
       accept: 'oaDesigner',
       drop(item, monitor) {
         const didDrop = monitor.didDrop();
-        if (didDrop) return;
+        const isOver = monitor.isOver();
+        const canDrop = monitor.canDrop();
+        const isOverCurrent = monitor.isOver({ shallow: true });
+        const isDrop = canDrop && isOver && isOverCurrent;
+        console.log(didDrop, isOver, canDrop, isOverCurrent, isDrop);
+        if (didDrop && !isDrop) return;
+        onAddControl(item.schema, 'add', schemas.length, null);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
@@ -48,7 +55,7 @@ const PreviewContainer = ({
         isOverCurrent: monitor.isOver({ shallow: true }),
       }),
     }),
-    [onAddControl, moveSchema],
+    [schemas, onAddControl],
   );
   return (
     <Container
@@ -61,8 +68,11 @@ const PreviewContainer = ({
           key={schema.props.id}
           index={index}
           schema={schema}
+          parentId={schema.props.id}
           activeKey={activeKey}
           onMoveSchema={moveSchema}
+          onAddControl={onAddControl}
+          onRemoveControl={onRemoveControl}
           onUpdateActive={onUpdateActive}
         />
       ))}

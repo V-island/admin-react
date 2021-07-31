@@ -10,8 +10,7 @@ const Card = styled.div`
   min-height: 38px;
   background: #fff;
   transition: 0.3s all ease;
-  border: ${(props) =>
-    props.isLayout ? '1px dashed #ccc' : '1px solid transparent'};
+  border: 1px solid transparent;
   border-left: ${(props) => {
     if (props.isActive) return '3px solid #0089ff';
     if (props.isLayout) return '3px dashed #ccc';
@@ -20,6 +19,9 @@ const Card = styled.div`
   box-shadow: ${(props) =>
     props.isActive ? '0 1px 10px 0 rgb(226 226 226 / 50%)' : 'none'};
   opacity: ${(props) => (props.isDragging ? 0.4 : 1)};
+  outline: ${(props) => (props.isOver ? 'rgb(0, 137, 255) solid 1px' : 'none')};
+  // pointer-events: none;
+  z-index: ${(props) => (props.isActive ? 999 : 1)};
 
   &:hover {
     border-left: ${(props) =>
@@ -74,7 +76,15 @@ const ButtonGroup = styled.div`
 
 const ControlCard = (props) => {
   const ref = useRef(null);
-  const { schema, activeKey, index, onMoveSchema, onUpdateActive } = props;
+  const {
+    schema,
+    activeKey,
+    index,
+    parentId,
+    onAddControl,
+    onRemoveControl,
+    onUpdateActive,
+  } = props;
   const {
     props: { id },
   } = schema;
@@ -91,47 +101,61 @@ const ControlCard = (props) => {
       //   if (!didDrop) onMoveSchema(droppedId, index);
       // },
     }),
-    [id, index, onMoveSchema],
+    [id, index],
   );
 
-  const [{ handlerId }, drop] = useDrop(
+  const [{ canDrop, isOver, isOverCurrent }, drop] = useDrop(
     () => ({
       accept: 'oaDesigner',
-      drop: () => ({
-        id: id,
-      }),
-      collect: (monitor) => ({
-        handlerId: monitor.getHandlerId(),
-      }),
-      hover(item, monitor) {
-        if (!ref.current) return;
-        const dragIndex = item.index;
-        const hoverIndex = index;
+      drop(item, monitor) {
+        const didDrop = monitor.didDrop();
+        const isOver = monitor.isOver();
+        const canDrop = monitor.canDrop();
+        const isOverCurrent = monitor.isOver({ shallow: true });
+        const isDrop = canDrop && isOver && isOverCurrent;
 
-        if (dragIndex === hoverIndex) return;
-
-        const hoverBoundingRect = ref.current?.getBoundingClientRect();
-        const hoverMiddleY =
-          (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-        const clientOffset = monitor.getClientOffset();
-        const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-        if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
-
-        console.log(item, dragIndex, hoverIndex);
-
-        item.index = hoverIndex;
+        if (didDrop && !isDrop) return;
+        onAddControl(item.schema, 'add', index, id);
       },
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+        isOverCurrent: monitor.isOver({ shallow: true }),
+      }),
+      // hover(item, monitor) {
+      //   if (!ref.current) return;
+      //   const dragIndex = item.index;
+      //   const hoverIndex = index;
+
+      //   if (dragIndex === hoverIndex) return;
+
+      //   const hoverBoundingRect = ref.current?.getBoundingClientRect();
+      //   const hoverMiddleY =
+      //     (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      //   const clientOffset = monitor.getClientOffset();
+      //   const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+      //   if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
+
+      //   console.log(item, dragIndex, hoverIndex);
+
+      //   item.index = hoverIndex;
+      // },
     }),
-    [id, onMoveSchema],
+    [id, index, parentId, onAddControl],
   );
   drag(drop(ref));
   return (
     <Card
       ref={ref}
+      data-swap-key={schema.props.id}
       isLayout={schema.type == 1}
       isDragging={isDragging}
+      isOver={canDrop && isOver && isOverCurrent}
       isActive={schema.props.id == activeKey}
-      onClick={() => onUpdateActive(schema.props.id)}
+      onClick={(e) => {
+        e.stopPropagation();
+        onUpdateActive(schema.props.id);
+      }}
     >
       <Content>
         <CardTitle>{schema.props.label}</CardTitle>
@@ -142,7 +166,7 @@ const ControlCard = (props) => {
           type="link"
           size="small"
           icon={<DeleteOutlined />}
-          onClick={() => {}}
+          onClick={() => onRemoveControl(schema.props.id)}
         />
       </ButtonGroup>
     </Card>
@@ -156,24 +180,8 @@ const CardChildren = (props) => {
 
   const newSchemas = schema.children || [];
 
-  const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    accept: 'oaDesigner',
-    drop(item, monitor) {
-      const didDrop = monitor.didDrop();
-      console.log(item, didDrop);
-      if (didDrop) return;
-    },
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop(),
-    }),
-  }));
   return (
-    <Container
-      ref={drop}
-      isOver={isOver && canDrop}
-      isEmpty={newSchemas.length == 0}
-    >
+    <Container isEmpty={newSchemas.length == 0}>
       {newSchemas.map((item, index) => (
         <ControlCard
           {...props}
@@ -181,6 +189,7 @@ const CardChildren = (props) => {
           parentKey={item.props.id}
           schema={item}
           index={index}
+          parentId={schema.props.id}
         />
       ))}
       <EmptyPrompt isEmpty={newSchemas.length == 0}>

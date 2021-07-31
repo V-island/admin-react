@@ -12,6 +12,7 @@ export default defineConfig({
   dva: {
     hmr: true,
   },
+  mfsu: { production: { output: '.mfsu-production' } },
   locale: {
     default: 'zh-CN',
     antd: true,
