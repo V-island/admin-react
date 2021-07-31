@@ -36,8 +36,9 @@ const PropertyLibrary = (props) => {
   const { activeKey, schemaMap, onUpdateSelect } = props;
 
   if (!activeKey) return null;
-
   const control = schemaMap[activeKey];
+
+  if (!control) return null;
 
   return createElement(components[control.componentName], {
     control,
