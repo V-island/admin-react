@@ -31,8 +31,8 @@ const EmptyPrompt = styled.div`
 const PreviewContainer = ({
   schemas,
   activeKey,
-  moveSchema,
   onAddControl,
+  onMoveControl,
   onRemoveControl,
   onUpdateActive,
 }) => {
@@ -45,9 +45,20 @@ const PreviewContainer = ({
         const canDrop = monitor.canDrop();
         const isOverCurrent = monitor.isOver({ shallow: true });
         const isDrop = canDrop && isOver && isOverCurrent;
-        console.log(didDrop, isOver, canDrop, isOverCurrent, isDrop);
+
         if (didDrop && !isDrop) return;
-        onAddControl(item.schema, 'add', schemas.length, null);
+
+        console.log(
+          'root',
+          item,
+          didDrop,
+          isOver,
+          canDrop,
+          isOverCurrent,
+          isDrop,
+        );
+        if (item.copy)
+          return onAddControl(item.schema, 'copy', schemas.length, null);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
@@ -70,8 +81,8 @@ const PreviewContainer = ({
           schema={schema}
           parentId={schema.props.id}
           activeKey={activeKey}
-          onMoveSchema={moveSchema}
           onAddControl={onAddControl}
+          onMoveControl={onMoveControl}
           onRemoveControl={onRemoveControl}
           onUpdateActive={onUpdateActive}
         />

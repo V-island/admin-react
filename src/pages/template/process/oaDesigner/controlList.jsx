@@ -49,7 +49,7 @@ const ControlTask = ({ schema, onAddControl }) => {
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: 'oaDesigner',
-      item: { schema },
+      item: { schema, copy: true },
       options: {
         dropEffect: 'copy',
       },

@@ -89,10 +89,10 @@ class FormDesign extends Component {
       const index = Number(path.join());
       if (event == 'click') schemas.splice(index + 1, 0, schema);
 
-      if (event == 'add' && schemas.length > 0)
-        schemas.splice(index + 1, 0, schema);
+      if (event == 'copy' && schemas.length > 0)
+        schemas.splice(index, 0, schema);
 
-      if (event == 'add' && schemas.length == 0) schemas.push(schema);
+      if (event == 'copy' && schemas.length == 0) schemas.push(schema);
 
       if (event == 'remove') schemas.splice(index, 1);
     } else {
@@ -127,9 +127,9 @@ class FormDesign extends Component {
         ? parentSchemas[index + 1].props.id
         : parentSchemas[index + 1];
   };
-
+  // 添加控件
   onAddControl = (schema, event, index, parentKey) => {
-    const activeId = event == 'add' ? parentKey : this.state.activeKey;
+    const activeId = event == 'copy' ? parentKey : this.state.activeKey;
     const schemaId = `${schema.componentName}_${uuid()}`;
     const newSchema = { ...schema, props: { ...schema.props, id: schemaId } };
 
@@ -150,8 +150,10 @@ class FormDesign extends Component {
     const startSchema = activeId ? this.state.schemaMap[activeId] : {};
     const swapPath = activeId ? startSchema._ctx.swapPath : `/${index}`;
     const newSwapPath =
-      startSchema.type == 1 && event == 'add'
-        ? `${swapPath}/children/${index}`
+      startSchema.type == 1 && event == 'copy'
+        ? `${swapPath}/children/${
+            startSchema.children ? startSchema.children.length : index
+          }`
         : swapPath;
     const newSchemas = this.findSchemas(
       schemas,
@@ -166,10 +168,42 @@ class FormDesign extends Component {
       schemaMap: newSchemaMap,
       schemas: newSchemas,
     };
+    console.log(newState);
     this.setState(newState);
     return;
   };
 
+  // 移动控件
+  onMoveControl = ({ schema, dragIndex, dragId, hoverIndex, hoverId }) => {
+    console.log('Move', dragIndex, dragId, hoverIndex, hoverId);
+    const schemas = [...this.state.schemas];
+    const startPath = this.state.schemaMap[dragId]._ctx.swapPath;
+    const finishPath = this.state.schemaMap[hoverId]._ctx.swapPath;
+    const startSchemas = this.findSchemas(
+      schemas,
+      startPath.split('/').slice(1),
+      'remove',
+    );
+    const finishSchemas = this.findSchemas(
+      startSchemas,
+      finishPath.split('/').slice(1),
+      'copy',
+      schema,
+    );
+    const newSchemaMap = this.createSchemaMap(finishSchemas, '', '/');
+
+    const newState = {
+      ...this.state,
+      activeKey: dragId,
+      schemaMap: newSchemaMap,
+      schemas: finishSchemas,
+    };
+
+    this.setState(newState);
+    return;
+  };
+
+  // 移除添加控件
   onRemoveControl = (schemaId) => {
     const schemas = [...this.state.schemas];
     const {
@@ -207,74 +241,6 @@ class FormDesign extends Component {
     });
   };
 
-  handleDragAdd = (schema, parentKey, event) => {
-    if (event == 'add') {
-      const schemaId = `${schema.componentName}_${uuid()}`;
-      const newSchema = { ...schema, props: { ...schema.props, id: schemaId } };
-    }
-
-    console.log(task, index, newSchema, parentKey);
-  };
-
-  handleDragEnd = (schema, result) => {
-    const { componentName, type, props } = schema;
-    const schemaId = `${componentName}_${uuid()}`;
-    const newSchema = {
-      type,
-      componentName,
-      props: {
-        ...props,
-        id: schemaId,
-      },
-      __ctx: {
-        parentKey: result ? result.id : '',
-        swapKey: schemaId,
-        swapPath: '',
-      },
-    };
-    const newState = {
-      ...this.state,
-      activeKey: schemaId,
-      schemaMap: {
-        ...this.state.schemaMap,
-        [schemaId]: newSchema,
-      },
-      schemas: [...this.state.schemas, newSchema],
-    };
-    console.log(newState);
-    this.setState(newState);
-  };
-
-  findSchema = (id) => {
-    const schema = this.state.schemas.filter((item) => item.props.id === id)[0];
-
-    return {
-      schema,
-      index: this.state.schemas.indexOf(schema),
-    };
-  };
-
-  moveSchema = (id, atIndex) => {
-    console.log(id, atIndex);
-    const { schema, index } = this.findSchema(id);
-
-    const newSchemas = Array.from(this.state.schemas);
-    newSchemas.splice(index, 1);
-    newSchemas.splice(atIndex, 0, schema);
-
-    const newState = {
-      ...this.state,
-      activeKey: id,
-      schemas: newSchemas,
-    };
-    console.log(newState);
-    this.setState(newState);
-  };
-
-  onDropEnd = (dragIndex, hoverIndex) => {
-    console.log(dragIndex, hoverIndex);
-  };
-
   render() {
     return (
       <DndProvider backend={HTML5Backend}>
@@ -294,8 +260,8 @@ class FormDesign extends Component {
             <PreviewContainer
               schemas={this.state.schemas}
               activeKey={this.state.activeKey}
-              moveSchema={this.moveSchema}
               onAddControl={this.onAddControl}
+              onMoveControl={this.onMoveControl}
               onRemoveControl={this.onRemoveControl}
               onUpdateActive={this.onUpdateActive}
             />

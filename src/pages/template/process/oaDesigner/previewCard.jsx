@@ -82,26 +82,22 @@ const ControlCard = (props) => {
     index,
     parentId,
     onAddControl,
+    onMoveControl,
     onRemoveControl,
     onUpdateActive,
   } = props;
-  const {
-    props: { id },
-  } = schema;
   const [{ isDragging }, drag] = useDrag(
     () => ({
       type: 'oaDesigner',
-      item: { id, index },
+      item: { schema, index, move: false },
+      options: {
+        dropEffect: 'move',
+      },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
-      // end: (item, monitor) => {
-      //   const { id: droppedId, index } = item;
-      //   const didDrop = monitor.didDrop();
-      //   if (!didDrop) onMoveSchema(droppedId, index);
-      // },
     }),
-    [id, index],
+    [schema, index],
   );
 
   const [{ canDrop, isOver, isOverCurrent }, drop] = useDrop(
@@ -115,33 +111,34 @@ const ControlCard = (props) => {
         const isDrop = canDrop && isOver && isOverCurrent;
 
         if (didDrop && !isDrop) return;
-        onAddControl(item.schema, 'add', index, id);
+
+        if (item.copy)
+          return onAddControl(item.schema, 'copy', index, parentId);
+        if (item.move) return onMoveControl(item);
       },
       collect: (monitor) => ({
         isOver: monitor.isOver(),
         canDrop: monitor.canDrop(),
         isOverCurrent: monitor.isOver({ shallow: true }),
       }),
-      // hover(item, monitor) {
-      //   if (!ref.current) return;
-      //   const dragIndex = item.index;
-      //   const hoverIndex = index;
+      hover(item) {
+        if (item.copy) return;
+        if (!item) return;
 
-      //   if (dragIndex === hoverIndex) return;
+        const dragIndex = item.index;
+        const dragId = item.schema.props.id;
+        item.move = false;
 
-      //   const hoverBoundingRect = ref.current?.getBoundingClientRect();
-      //   const hoverMiddleY =
-      //     (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-      //   const clientOffset = monitor.getClientOffset();
-      //   const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-      //   if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
+        if (dragId === parentId && dragIndex === index) return;
 
-      //   console.log(item, dragIndex, hoverIndex);
-
-      //   item.index = hoverIndex;
-      // },
+        item.move = true;
+        item.dragIndex = dragIndex;
+        item.dragId = dragId;
+        item.hoverIndex = index;
+        item.hoverId = parentId;
+      },
     }),
-    [id, index, parentId, onAddControl],
+    [index, parentId, onAddControl, onMoveControl],
   );
   drag(drop(ref));
   return (
@@ -186,10 +183,9 @@ const CardChildren = (props) => {
         <ControlCard
           {...props}
           key={item.props.id}
-          parentKey={item.props.id}
+          parentId={item.props.id}
           schema={item}
           index={index}
-          parentId={schema.props.id}
         />
       ))}
       <EmptyPrompt isEmpty={newSchemas.length == 0}>
