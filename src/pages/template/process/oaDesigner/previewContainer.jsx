@@ -8,7 +8,7 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  padding: 20px;
+  padding: 20px 20px;
   border: 1px dashed transparent;
   border-color: ${(props) => (props.isOver ? '#298dff' : 'transparent')};
   background-color: #eee;
@@ -16,14 +16,14 @@ const Container = styled.div`
   transition: 0.3s all ease;
 
   & > * {
-    margin: 8px;
+    margin: 8px 0;
   }
 `;
 
 const EmptyPrompt = styled.div`
   display: ${(props) => (props.isEmpty ? 'flex' : 'none')};
   width: 100%;
-  height: 100%;
+  height: calc(100% - 16px);
   justify-content: center;
   align-items: center;
 `;
@@ -48,15 +48,6 @@ const PreviewContainer = ({
 
         if (didDrop && !isDrop) return;
 
-        console.log(
-          'root',
-          item,
-          didDrop,
-          isOver,
-          canDrop,
-          isOverCurrent,
-          isDrop,
-        );
         if (item.copy)
           return onAddControl(item.schema, 'copy', schemas.length, null);
       },

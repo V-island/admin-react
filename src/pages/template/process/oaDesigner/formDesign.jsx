@@ -52,6 +52,7 @@ class FormDesign extends Component {
     schemas: [], // 容器组
   };
 
+  // 创建控件地图
   createSchemaMap = (schemas, parentKey, path) => {
     const map = {};
 
@@ -84,6 +85,7 @@ class FormDesign extends Component {
     return map;
   };
 
+  // 遍历控件树
   findSchemas = (schemas, path, event, schema) => {
     if (path.length == 1) {
       const index = Number(path.join());
@@ -95,15 +97,19 @@ class FormDesign extends Component {
       if (event == 'copy' && schemas.length == 0) schemas.push(schema);
 
       if (event == 'remove') schemas.splice(index, 1);
+
+      if (event == 'update') schemas[index].props = schema;
     } else {
       const key = path[0];
       const newSchemas = schemas[key] || [];
       path.shift();
       schemas[key] = this.findSchemas(newSchemas, path, event, schema);
     }
+
     return schemas;
   };
 
+  // 获取其他选中状态
   getActionId = (schemaMap, parentId, path) => {
     const index = Number(path.pop());
     const parentSchemas =
@@ -127,6 +133,7 @@ class FormDesign extends Component {
         ? parentSchemas[index + 1].props.id
         : parentSchemas[index + 1];
   };
+
   // 添加控件
   onAddControl = (schema, event, index, parentKey) => {
     const activeId = event == 'copy' ? parentKey : this.state.activeKey;
@@ -144,6 +151,7 @@ class FormDesign extends Component {
         schemas: newSchemas,
       };
       this.setState(newState);
+      this.props.onUpdateContent(newSchemas);
       return;
     }
     const schemas = [...this.state.schemas];
@@ -168,8 +176,8 @@ class FormDesign extends Component {
       schemaMap: newSchemaMap,
       schemas: newSchemas,
     };
-    console.log(newState);
     this.setState(newState);
+    this.props.onUpdateContent(newSchemas);
     return;
   };
 
@@ -200,6 +208,7 @@ class FormDesign extends Component {
     };
 
     this.setState(newState);
+    this.props.onUpdateContent(finishSchemas);
     return;
   };
 
@@ -221,20 +230,34 @@ class FormDesign extends Component {
     };
 
     this.setState(newState);
+    this.props.onUpdateContent(newState);
     return;
   };
 
+  // 更新控件信息
   onUpdateProperty = (_, values) => {
-    const newItem = { ...this.state.activeCard };
-    newItem.props = {
-      ...newItem.props,
-      ...values,
+    const schemas = [...this.state.schemas];
+    const schemaId = values.id;
+    const {
+      _ctx: { swapPath },
+    } = this.state.schemaMap[schemaId];
+    const newSwapPath = swapPath.split('/').slice(1);
+    const newSchemas = this.findSchemas(schemas, newSwapPath, 'update', values);
+    const newSchemaMap = this.createSchemaMap(newSchemas, '', '/');
+
+    const newState = {
+      ...this.state,
+      activeKey: schemaId,
+      schemaMap: newSchemaMap,
+      schemas: newSchemas,
     };
-    this.setState({
-      activeCard: newItem,
-    });
+
+    this.setState(newState);
+    this.props.onUpdateContent(newSchemas);
+    return;
   };
 
+  // 更新选中控件
   onUpdateActive = (key) => {
     this.setState({
       activeKey: key,

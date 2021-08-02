@@ -42,7 +42,7 @@ const Content = styled.div`
 const Container = styled.div`
   border: ${(props) =>
     props.isOver ? '1px dashed #0089ff' : '1px dashed #ccc'};
-  background: ${(props) => (props.isEmpty ? '#ddeff3' : '#fff')};
+  background: ${(props) => (props.isEmpty ? '#ddeff3' : '#f6f6f6')};
   padding: ${(props) => (props.isEmpty ? '20px' : '10px 0')};
   color: #aaa;
   transition: 0.3s all ease;
