@@ -4,6 +4,7 @@ import { LeftOutlined } from '@ant-design/icons';
 import { connect, history } from 'umi';
 import styled from 'styled-components';
 import { funDownload } from '@/utils/utils';
+import FormTemplate from '@/components/formTemplate';
 import BaseSetting from './baseSetting';
 import FormDesign from './formDesign';
 
@@ -32,7 +33,6 @@ const SpaceBox = styled.div`
     margin: 0 8px;
   }
 `;
-const PreviewContent = styled.div``;
 
 @connect(({ template }) => ({
   template,
@@ -174,7 +174,7 @@ class OADesigner extends Component {
             </Tabs>
           </MainContent>
           <Drawer {...previewConfig}>
-            <PreviewContent></PreviewContent>
+            <FormTemplate />
           </Drawer>
         </Content>
       </Layout>

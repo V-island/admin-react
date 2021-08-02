@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 // components
 import '@ant-design/compatible/assets/index.css';
 import { Form, Button, Divider, Row, Col } from 'antd';
-import GoForm from '@/components/GoTemplate/GoForm';
-import GoInput from '@/components/GoTemplate/GoInput';
-import GoSelect from '@/components/GoTemplate/GoSelect';
-import GoRadio from '@/components/GoTemplate/GoRadio';
+import GoForm from '@/components/formTemplate/GoForm';
+import GoInput from '@/components/formTemplate/GoInput';
+import GoSelect from '@/components/formTemplate/GoSelect';
+import GoRadio from '@/components/formTemplate/GoRadio';
 
 // 随机uuid
 const uuid = () => {
