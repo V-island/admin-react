@@ -6,7 +6,7 @@
       "title": "分栏",
       "type": 1,
       "default": false,
-      "componentName": "GoColumnLayout",
+      "componentName": "ColumnLayout",
       "props": {
         "label": "分栏",
         "required": false
@@ -17,7 +17,7 @@
       "title": "单行输入框",
       "type": 2,
       "default": false,
-      "componentName": "GoTextField",
+      "componentName": "TextField",
       "props": {
         "label": "单行输入框",
         "placeholder": "请输入"
@@ -28,7 +28,7 @@
       "title": "多行输入框",
       "type": 2,
       "default": false,
-      "componentName": "GoTextareaField",
+      "componentName": "TextareaField",
       "props": {
         "label": "多行输入框",
         "placeholder": "请输入"
@@ -39,84 +39,84 @@
       "title": "数字输入框",
       "type": 2,
       "default": false,
-      "componentName": "GoNumberField",
+      "componentName": "NumberField",
       "props": {
         "label": "数字输入框",
         "placeholder": "请输入"
       }
     },
     {
-      "id": "GoSelectField_12ee09837",
+      "id": "SelectField_12ee09837",
       "title": "单选框",
       "type": 2,
       "default": false,
-      "componentName": "GoSelectField",
+      "componentName": "SelectField",
       "props": {
         "label": "单选框",
         "placeholder": "请选择"
       }
     },
     {
-      "id": "GoMultiSelectField_11c798c4b",
+      "id": "MultiSelectField_11c798c4b",
       "title": "多选框",
       "type": 2,
       "default": false,
-      "componentName": "GoMultiSelectField",
+      "componentName": "MultiSelectField",
       "props": {
         "label": "多选框",
         "placeholder": "请选择"
       }
     },
     {
-      "id": "GoDateField_1d60d6589",
+      "id": "DateField_1d60d6589",
       "title": "日期",
       "type": 2,
       "default": false,
-      "componentName": "GoDateField",
+      "componentName": "DateField",
       "props": {
         "label": "日期",
         "placeholder": "请输入"
       }
     },
     {
-      "id": "GoDateRangeField_171063761",
+      "id": "DateRangeField_171063761",
       "title": "日期区间",
       "type": 2,
       "default": false,
-      "componentName": "GoDateRangeField",
+      "componentName": "DateRangeField",
       "props": {
         "label": "日期区间",
         "placeholder": "请输入"
       }
     },
     {
-      "id": "GoTextNote_1776581a0",
+      "id": "TextNote_1776581a0",
       "title": "说明文字",
       "type": 2,
       "default": false,
-      "componentName": "GoTextNote",
+      "componentName": "TextNote",
       "props": {
         "label": "说明文字",
         "placeholder": "请输入"
       }
     },
     {
-      "id": "GoPhotoField_19f19c732",
+      "id": "PhotoField_19f19c732",
       "title": "图片",
       "type": 3,
       "default": false,
-      "componentName": "GoPhotoField",
+      "componentName": "PhotoField",
       "props": {
         "label": "图片",
         "placeholder": "上传文件"
       }
     },
     {
-      "id": "GoAttachment_1a73b9a9e",
+      "id": "Attachment_1a73b9a9e",
       "title": "附件",
       "type": 3,
       "default": false,
-      "componentName": "GoAttachment",
+      "componentName": "Attachment",
       "props": {
         "label": "附件",
         "placeholder": "请上传文件"
@@ -127,7 +127,7 @@
       "title": "省市区/地区",
       "type": 3,
       "default": false,
-      "componentName": "GoAddressField",
+      "componentName": "AddressField",
       "props": {
         "label": "省市区/地区",
         "placeholder": "请选择"

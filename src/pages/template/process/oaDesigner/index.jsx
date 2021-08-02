@@ -174,7 +174,7 @@ class OADesigner extends Component {
             </Tabs>
           </MainContent>
           <Drawer {...previewConfig}>
-            <FormTemplate />
+            <FormTemplate schemas={content} />
           </Drawer>
         </Content>
       </Layout>

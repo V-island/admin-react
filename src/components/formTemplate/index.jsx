@@ -1,54 +1,23 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Form, Button, Divider, Row, Col } from 'antd';
+import { Form, Empty } from 'antd';
 import { uuid } from '@/utils/utils';
-
-// User Components
-import GoForm from './GoForm';
-import GoInput from './GoInput';
-import GoSelect from './GoSelect';
-import GoRadio from './GoRadio';
+import TemplateCard from './templateCard';
 
 const Container = styled.div`
   width: 100%;
-  height: 100%;
-  overflow-y: auto;
-  padding: 20px 20px;
-  border: 1px dashed transparent;
-  border-color: ${(props) => (props.isOver ? '#298dff' : 'transparent')};
-  background-color: #eee;
+  height: ${(props) => (props.isEmpty ? '100%' : 'auto')};
   margin: ${(props) => (props.isEmpty ? 'auto' : 0)};
   transition: 0.3s all ease;
-
-  & > * {
-    margin: 8px 0;
-  }
 `;
 
 const EmptyPrompt = styled.div`
   display: ${(props) => (props.isEmpty ? 'flex' : 'none')};
   width: 100%;
-  height: calc(100% - 16px);
+  height: 100%;
   justify-content: center;
   align-items: center;
 `;
-
-const UserComponent = {
-  // 通用
-  GoButton: Button,
-
-  // 布局
-  GoDivider: Divider,
-  GoRow: Row,
-  GoCol: Col,
-
-  // 数据录入
-  GoForm: GoForm,
-  GoFormItem: Form.Item,
-  GoSelect: GoSelect,
-  GoInput: GoInput,
-  GoRadio: GoRadio,
-};
 
 class GoTemplate extends Component {
   // 构建DOM
@@ -79,15 +48,22 @@ class GoTemplate extends Component {
       return e(Template, { ...props, ...this.template, children });
     else return e(Template, props, children);
   };
+  onFinish = (values) => {
+    console.log('Success:', values);
+  };
   render() {
+    const { schemas } = this.props;
+    console.log(this.props);
     return (
       <Container isEmpty={schemas.length == 0}>
-        {schemas.map((schema, index) => (
-          <PreviewCard />
-        ))}
-        <EmptyPrompt isEmpty={schemas.length == 0}>
-          <Empty style={{ margin: 'auto' }} description="点击或拖拽添加控件" />
-        </EmptyPrompt>
+        <Form onFinish={this.onFinish}>
+          {schemas.map((schema, index) => (
+            <TemplateCard key={index} schema={schema} />
+          ))}
+          <EmptyPrompt isEmpty={schemas.length == 0}>
+            <Empty style={{ margin: 'auto' }} description="暂无OA审批表单" />
+          </EmptyPrompt>
+        </Form>
       </Container>
     );
   }

@@ -14,22 +14,22 @@ import AddressField from './AddressField';
 
 const components = {
   // 布局控件
-  GoColumnLayout: ColumnLayout,
+  ColumnLayout: ColumnLayout,
 
   // 基础控件
-  GoTextField: TextField,
-  GoTextareaField: TextareaField,
-  GoNumberField: NumberField,
-  GoSelectField: SelectField,
-  GoMultiSelectField: MultiSelectField,
-  GoDateField: DateField,
-  GoDateRangeField: DateRangeField,
-  GoTextNote: TextNote,
+  TextField,
+  TextareaField,
+  NumberField,
+  SelectField,
+  MultiSelectField,
+  DateField,
+  DateRangeField,
+  TextNote,
 
   // 增强控件
-  GoPhotoField: PhotoField,
-  GoAttachment: Attachment,
-  GoAddressField: AddressField,
+  PhotoField,
+  Attachment,
+  AddressField,
 };
 
 const PropertyLibrary = (props) => {
