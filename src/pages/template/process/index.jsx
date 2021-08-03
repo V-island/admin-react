@@ -1,9 +1,30 @@
 import React, { Component } from 'react';
 import { history } from 'umi';
-import { Button, Table, Tag, Space } from 'antd';
+import { Button, Table, Tag } from 'antd';
 import request from '@/utils/request';
 
 const { Column } = Table;
+
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+`;
+
+const Toolbar = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  > * {
+    margin: 0 10px 10px 0;
+  }
+`;
+
+const OperateSpace = styled(Toolbar)`
+  > * {
+    margin: 0 8px;
+  }
+`;
 
 class Logic extends Component {
   state = {
@@ -57,8 +78,8 @@ class Logic extends Component {
     const { dataSource, pagination, loading } = this.state;
 
     return (
-      <>
-        <Space>
+      <Container>
+        <Toolbar>
           <Button
             type="primary"
             style={{ marginBottom: '20px', minWidth: '80px', fontSize: '14px' }}
@@ -66,7 +87,7 @@ class Logic extends Component {
           >
             添加流程
           </Button>
-        </Space>
+        </Toolbar>
         <Table
           rowKey={(record) => record.id}
           dataSource={dataSource}
@@ -101,13 +122,13 @@ class Logic extends Component {
             title="操作"
             dataIndex="options"
             render={(text, record) => (
-              <Space size="middle">
+              <OperateSpace size="middle">
                 <a onClick={() => this.editProcess(record)}>编辑</a>
-              </Space>
+              </OperateSpace>
             )}
           />
         </Table>
-      </>
+      </Container>
     );
   }
 }

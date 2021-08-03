@@ -1,23 +1,46 @@
 import React, { Component } from 'react';
-import { Button, Table, Switch, Tag, Space } from 'antd';
+import { Button, Table, Switch, Tag } from 'antd';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
+import styled from 'styled-components';
 import request from '@/utils/request';
-import { uuid } from '@/utils/utils';
+import { uuid, funDownload } from '@/utils/utils';
 import ControlForm from './form';
 
 const { Column } = Table;
 
-class Kit extends Component {
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+`;
+
+const Toolbar = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  > * {
+    margin: 0 10px 10px 0;
+  }
+`;
+
+const OperateSpace = styled(Toolbar)`
+  > * {
+    margin: 0 8px;
+  }
+`;
+
+class Control extends Component {
   state = {
-    data: [],
+    dataSource: [],
     pagination: {
       current: 1,
-      pageSize: 10,
+      pageSize: 50,
     },
     loading: false,
     formConfig: {
       title: '',
       show: false,
+      isEdit: false,
     },
     formObj: {},
   };
@@ -32,6 +55,7 @@ class Kit extends Component {
       formConfig: {
         title: '添加控件',
         show: true,
+        isEdit: false,
       },
       formObj: {
         name: '',
@@ -39,17 +63,19 @@ class Kit extends Component {
         default: true,
         identifier: '',
         properties: [],
+        props: {},
       },
     });
   };
 
-  editControl = (item) => {
+  editControl = (row) => {
     this.setState({
       formConfig: {
         title: '编辑控件',
         show: true,
+        isEdit: true,
       },
-      formObj: item,
+      formObj: row,
     });
   };
 
@@ -62,19 +88,37 @@ class Kit extends Component {
     });
   };
 
-  refreshControl = (item) => {
-    this.setState({ loading: true });
-    const data = [...this.state.data];
+  refreshControl = (row, edit) => {
+    const newData = [...this.state.dataSource];
 
-    data.push({
-      id: uuid(),
-      ...item,
-    });
+    if (edit) {
+      const index = newData.findIndex((item) => row.id === item.id);
+      const item = newData[index];
 
-    this.setState({
-      loading: false,
-      data: data,
-    });
+      newData.splice(index, 1, {
+        ...item,
+        ...row,
+      });
+      this.setState({
+        dataSource: newData,
+      });
+    } else {
+      this.setState({
+        dataSource: [
+          ...newData,
+          {
+            id: `${row.componentName}_${uuid()}`,
+            ...row,
+          },
+        ],
+      });
+    }
+  };
+
+  exportJson = () => {
+    const { dataSource } = this.state;
+
+    funDownload(JSON.stringify({ code: 1, data: dataSource }), 'control.json');
   };
 
   handleTableChange = (pagination, filters, sorter) => {
@@ -93,36 +137,35 @@ class Kit extends Component {
     response.then((results) => {
       this.setState({
         loading: false,
-        data: results.data,
+        dataSource: results.data,
         pagination: {
           ...params.pagination,
-          total: 10,
+          total: 20,
         },
       });
     });
   };
 
   render() {
-    const { formConfig, formObj, data, pagination, loading } = this.state;
+    const { formConfig, formObj, dataSource, pagination, loading } = this.state;
 
     return (
-      <>
-        <Button
-          type="primary"
-          style={{ marginBottom: '20px', minWidth: '80px', fontSize: '14px' }}
-          onClick={this.addControl}
-        >
-          添加套件
-        </Button>
+      <Container>
+        <Toolbar>
+          <Button type="primary" onClick={this.addControl}>
+            添加套件
+          </Button>
+          <Button onClick={this.exportJson}>导出JSON</Button>
+        </Toolbar>
         <Table
           rowKey={(record) => record.id}
-          dataSource={data}
+          dataSource={dataSource}
           pagination={pagination}
           loading={loading}
           onChange={this.handleTableChange}
         >
-          <Column title="名称" dataIndex="name" />
-          <Column title="标签名" dataIndex="identifier" />
+          <Column title="名称" dataIndex="title" />
+          <Column title="标签名" dataIndex="componentName" />
           <Column
             title="类型"
             dataIndex="type"
@@ -158,9 +201,9 @@ class Kit extends Component {
             title="操作"
             dataIndex="options"
             render={(text, record) => (
-              <Space size="middle">
+              <OperateSpace>
                 <a onClick={() => this.editControl(record)}>编辑</a>
-              </Space>
+              </OperateSpace>
             )}
           />
         </Table>
@@ -170,9 +213,9 @@ class Kit extends Component {
           onClose={this.closeControl}
           onFinish={this.refreshControl}
         />
-      </>
+      </Container>
     );
   }
 }
 
-export default Kit;
+export default Control;

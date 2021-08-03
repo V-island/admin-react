@@ -1,29 +1,23 @@
 import React, { Component, createRef } from 'react';
-import {
-  Drawer,
-  Form,
-  Button,
-  Space,
-  Col,
-  Row,
-  Input,
-  Select,
-  Switch,
-} from 'antd';
-import {
-  CloseOutlined,
-  CheckOutlined,
-  MinusCircleOutlined,
-  PlusOutlined,
-} from '@ant-design/icons';
+import { Drawer, Form, Button, Input, Select, Switch } from 'antd';
+import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
+import styled from 'styled-components';
 
 const { Option } = Select;
 
-class ControlForm extends Component {
+const DrawerFooter = styled.div`
+  text-align: right;
+
+  > * {
+    margin: 0 8px;
+  }
+`;
+
+class KitForm extends Component {
   formRef = createRef();
 
   state = {
-    width: 900,
+    width: 450,
     bodyStyle: {
       paddingBottom: 80,
     },
@@ -48,16 +42,14 @@ class ControlForm extends Component {
     }
   }
 
-  onFinish = async () => {
-    const { onFinish, onClose } = this.props;
-    try {
-      const values = await this.formRef.current.validateFields();
-
-      onFinish(values);
-      onClose();
-    } catch (errorInfo) {
-      console.log('Failed:', errorInfo);
-    }
+  onFinish = (values) => {
+    const {
+      onFinish,
+      onClose,
+      config: { isEdit },
+    } = this.props;
+    onFinish(values, isEdit);
+    onClose();
   };
 
   render() {
@@ -71,31 +63,18 @@ class ControlForm extends Component {
         onClose={onClose}
         visible={show}
         bodyStyle={bodyStyle}
-        footer={
-          <div
-            style={{
-              textAlign: 'right',
-            }}
-          >
-            <Button
-              onClick={onClose}
-              style={{ marginRight: 8, minWidth: '80px', fontSize: '14px' }}
-            >
-              返回
-            </Button>
-            <Button
-              onClick={this.onFinish}
-              type="primary"
-              style={{ minWidth: '80px', fontSize: '14px' }}
-            >
-              保存
-            </Button>
-          </div>
-        }
       >
-        <Form ref={this.formRef} layout="vertical" initialValues={values}>
+        <Form
+          ref={this.formRef}
+          layout="vertical"
+          initialValues={values}
+          onFinish={this.onFinish}
+        >
+          <Form.Item name="id" label="ID" hidden>
+            <Input placeholder="请输入ID" />
+          </Form.Item>
           <Form.Item
-            name="name"
+            name="title"
             label="名称"
             rules={[{ required: true, message: '控件名称必填' }]}
           >
@@ -124,93 +103,37 @@ class ControlForm extends Component {
             />
           </Form.Item>
           <Form.Item
-            name="identifier"
+            name="componentName"
             label="标签名"
             rules={[{ required: true, message: '控件名称必填' }]}
           >
             <Input placeholder="请输入控件名称" />
           </Form.Item>
-          <Form.List name="properties" label="属性">
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, fieldKey, ...restField }) => (
-                  <Space
-                    key={key}
-                    style={{ display: 'flex', marginBottom: 8 }}
-                    align="center"
-                  >
-                    <Form.Item
-                      {...restField}
-                      label="属性名称"
-                      name={[name, 'name']}
-                      fieldKey={[fieldKey, 'name']}
-                      rules={[{ required: true, message: '属性名称必填' }]}
-                    >
-                      <Input placeholder="请输入名称" />
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      label="提示语句"
-                      name={[name, 'prompt']}
-                      fieldKey={[fieldKey, 'prompt']}
-                      rules={[{ required: true, message: '提示语必填' }]}
-                    >
-                      <Input placeholder="请输入提示语" />
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      label="数据类型"
-                      name={[name, 'type']}
-                      fieldKey={[fieldKey, 'type']}
-                      rules={[{ required: true, message: '数据类型必填' }]}
-                    >
-                      <Select placeholder="请选择控件类型">
-                        <Option value="String">字符串</Option>
-                        <Option value="Number">数字</Option>
-                        <Option value="Array">数组</Option>
-                        <Option value="Object">对象</Option>
-                      </Select>
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      label="数据来源"
-                      name={[name, 'data']}
-                      fieldKey={[fieldKey, 'data']}
-                      rules={[{ required: true, message: '数据来源必填' }]}
-                    >
-                      <Select placeholder="请选择控件类型">
-                        <Option value="User">自定义</Option>
-                        <Option value="Database">数据字典</Option>
-                      </Select>
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      label="默认值"
-                      name={[name, 'default_val']}
-                      fieldKey={[fieldKey, 'default_val']}
-                    >
-                      <Input placeholder="请输入默认值" />
-                    </Form.Item>
-                    <MinusCircleOutlined onClick={() => remove(name)} />
-                  </Space>
-                ))}
-                <Form.Item>
-                  <Button
-                    type="dashed"
-                    onClick={() => add()}
-                    block
-                    icon={<PlusOutlined />}
-                  >
-                    添加属性
-                  </Button>
-                </Form.Item>
-              </>
-            )}
-          </Form.List>
+          <Form.Item name={['props', 'label']} label="标题">
+            <Input placeholder="请输入标题" />
+          </Form.Item>
+          <Form.Item name={['props', 'placeholder']} label="提示文字">
+            <Input placeholder="请输入提示文字" />
+          </Form.Item>
+          <Form.Item
+            name={['props', 'required']}
+            valuePropName="checked"
+            label="必填"
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item>
+            <DrawerFooter>
+              <Button onClick={onClose}>返回</Button>
+              <Button type="primary" htmlType="submit">
+                保存
+              </Button>
+            </DrawerFooter>
+          </Form.Item>
         </Form>
       </Drawer>
     );
   }
 }
 
-export default ControlForm;
+export default KitForm;

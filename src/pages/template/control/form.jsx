@@ -1,8 +1,17 @@
 import React, { Component, createRef } from 'react';
 import { Drawer, Form, Button, Input, Select, Switch } from 'antd';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
+import styled from 'styled-components';
 
 const { Option } = Select;
+
+const DrawerFooter = styled.div`
+  text-align: right;
+
+  > * {
+    margin: 0 8px;
+  }
+`;
 
 class ControlForm extends Component {
   formRef = createRef();
@@ -33,20 +42,14 @@ class ControlForm extends Component {
     }
   }
 
-  onFinish = async () => {
+  onFinish = (values) => {
     const {
       onFinish,
       onClose,
       config: { isEdit },
     } = this.props;
-    try {
-      const values = await this.formRef.current.validateFields();
-
-      onFinish(values, isEdit);
-      onClose();
-    } catch (errorInfo) {
-      console.log('Failed:', errorInfo);
-    }
+    onFinish(values, isEdit);
+    onClose();
   };
 
   render() {
@@ -60,29 +63,13 @@ class ControlForm extends Component {
         onClose={onClose}
         visible={show}
         bodyStyle={bodyStyle}
-        footer={
-          <div
-            style={{
-              textAlign: 'right',
-            }}
-          >
-            <Button
-              onClick={onClose}
-              style={{ marginRight: 8, minWidth: '80px', fontSize: '14px' }}
-            >
-              返回
-            </Button>
-            <Button
-              onClick={this.onFinish}
-              type="primary"
-              style={{ minWidth: '80px', fontSize: '14px' }}
-            >
-              保存
-            </Button>
-          </div>
-        }
       >
-        <Form ref={this.formRef} layout="vertical" initialValues={values}>
+        <Form
+          ref={this.formRef}
+          layout="vertical"
+          initialValues={values}
+          onFinish={this.onFinish}
+        >
           <Form.Item name="id" label="ID" hidden>
             <Input placeholder="请输入ID" />
           </Form.Item>
@@ -134,6 +121,14 @@ class ControlForm extends Component {
             label="必填"
           >
             <Switch />
+          </Form.Item>
+          <Form.Item>
+            <DrawerFooter>
+              <Button onClick={onClose}>返回</Button>
+              <Button type="primary" htmlType="submit">
+                保存
+              </Button>
+            </DrawerFooter>
           </Form.Item>
         </Form>
       </Drawer>

@@ -1,11 +1,33 @@
 import React, { Component } from 'react';
-import { Button, Table, Switch, Tag, Space } from 'antd';
+import { Button, Table, Switch, Tag } from 'antd';
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
+import styled from 'styled-components';
 import request from '@/utils/request';
 import { uuid, funDownload } from '@/utils/utils';
 import ControlForm from './form';
 
 const { Column } = Table;
+
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+`;
+
+const Toolbar = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  > * {
+    margin: 0 10px 10px 0;
+  }
+`;
+
+const OperateSpace = styled(Toolbar)`
+  > * {
+    margin: 0 8px;
+  }
+`;
 
 class Control extends Component {
   state = {
@@ -81,14 +103,9 @@ class Control extends Component {
         dataSource: newData,
       });
     } else {
+      row.id = `${row.componentName}_${uuid()}`;
       this.setState({
-        dataSource: [
-          ...newData,
-          {
-            id: `${values.componentName}_${uuid()}`,
-            ...row,
-          },
-        ],
+        dataSource: [...newData, row],
       });
     }
   };
@@ -128,22 +145,13 @@ class Control extends Component {
     const { formConfig, formObj, dataSource, pagination, loading } = this.state;
 
     return (
-      <>
-        <Space>
-          <Button
-            type="primary"
-            style={{ marginBottom: '20px', minWidth: '80px', fontSize: '14px' }}
-            onClick={this.addControl}
-          >
+      <Container>
+        <Toolbar>
+          <Button type="primary" onClick={this.addControl}>
             添加控件
           </Button>
-          <Button
-            style={{ marginBottom: '20px', minWidth: '80px', fontSize: '14px' }}
-            onClick={this.exportJson}
-          >
-            导出JSON
-          </Button>
-        </Space>
+          <Button onClick={this.exportJson}>导出JSON</Button>
+        </Toolbar>
         <Table
           rowKey={(record) => record.id}
           dataSource={dataSource}
@@ -188,9 +196,9 @@ class Control extends Component {
             title="操作"
             dataIndex="options"
             render={(text, record) => (
-              <Space size="middle">
+              <OperateSpace>
                 <a onClick={() => this.editControl(record)}>编辑</a>
-              </Space>
+              </OperateSpace>
             )}
           />
         </Table>
@@ -200,7 +208,7 @@ class Control extends Component {
           onClose={this.closeControl}
           onFinish={this.refreshControl}
         />
-      </>
+      </Container>
     );
   }
 }
