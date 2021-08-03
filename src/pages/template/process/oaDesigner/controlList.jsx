@@ -7,7 +7,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const Title = styled.h3`
+const Title = styled.h5`
   display: flex;
   align-items: center;
   margin-bottom: 12px;

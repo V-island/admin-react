@@ -12,7 +12,7 @@ import PhotoField from './PhotoField';
 import Attachment from './Attachment';
 import AddressField from './AddressField';
 
-const components = {
+const UserComponent = {
   // 布局控件
   ColumnLayout: ColumnLayout,
 
@@ -32,18 +32,15 @@ const components = {
   AddressField,
 };
 
-const PropertyLibrary = (props) => {
-  const { activeKey, schemaMap, onUpdateSelect } = props;
-
+const PropertyLibrary = ({ activeKey, schemaMap, onUpdateSelect }) => {
   if (!activeKey) return null;
+
   const control = schemaMap[activeKey];
+  const Card = UserComponent[control.componentName];
 
   if (!control) return null;
 
-  return createElement(components[control.componentName], {
-    control,
-    onUpdateSelect,
-  });
+  return <Card control={control} onUpdateSelect={onUpdateSelect} />;
 };
 
 export default PropertyLibrary;

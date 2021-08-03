@@ -7,10 +7,7 @@
       "type": 2,
       "default": false,
       "componentName": "TextField",
-      "props": {
-        "label": "单行输入框",
-        "placeholder": "请输入"
-      }
+      "props": { "label": "单行输入框", "placeholder": "请输入" }
     },
     {
       "id": "TextareaField_1220ea098",
@@ -18,10 +15,7 @@
       "type": 2,
       "default": false,
       "componentName": "TextareaField",
-      "props": {
-        "label": "多行输入框",
-        "placeholder": "请输入"
-      }
+      "props": { "label": "多行输入框", "placeholder": "请输入" }
     },
     {
       "id": "NumberField_1d673dbc9",
@@ -29,10 +23,7 @@
       "type": 2,
       "default": false,
       "componentName": "NumberField",
-      "props": {
-        "label": "数字输入框",
-        "placeholder": "请输入"
-      }
+      "props": { "label": "数字输入框", "placeholder": "请输入" }
     },
     {
       "id": "SelectField_12ee09837",
@@ -40,10 +31,7 @@
       "type": 2,
       "default": false,
       "componentName": "SelectField",
-      "props": {
-        "label": "选择框",
-        "placeholder": "请选择"
-      }
+      "props": { "label": "选择框", "placeholder": "请选择" }
     },
     {
       "id": "MultiSelectField_11c798c4b",
@@ -51,10 +39,7 @@
       "type": 2,
       "default": false,
       "componentName": "RadioField",
-      "props": {
-        "label": "单选",
-        "placeholder": "请选择"
-      }
+      "props": { "label": "单选", "placeholder": "请选择" }
     },
     {
       "id": "CheckboxField_11c798c4b",
@@ -62,9 +47,7 @@
       "type": 2,
       "default": false,
       "componentName": "CheckboxField",
-      "props": {
-        "label": "多选"
-      }
+      "props": { "label": "多选" }
     },
     {
       "id": "SwitchField_11c798c4b",
@@ -72,9 +55,7 @@
       "type": 2,
       "default": false,
       "componentName": "SwitchField",
-      "props": {
-        "label": "开关"
-      }
+      "props": { "label": "开关" }
     },
     {
       "id": "DateField_1d60d6589",
@@ -82,10 +63,7 @@
       "type": 2,
       "default": false,
       "componentName": "DateField",
-      "props": {
-        "label": "日期",
-        "placeholder": "请输入"
-      }
+      "props": { "label": "日期", "placeholder": "请输入" }
     },
     {
       "id": "DateRangeField_171063761",
@@ -93,10 +71,7 @@
       "type": 2,
       "default": false,
       "componentName": "DateRangeField",
-      "props": {
-        "label": "日期区间",
-        "placeholder": "请输入"
-      }
+      "props": { "label": "日期区间", "placeholder": "请输入" }
     },
     {
       "id": "DateTimeField_11c798c4b",
@@ -104,9 +79,7 @@
       "type": 2,
       "default": false,
       "componentName": "DateTimeField",
-      "props": {
-        "label": "时间选择框"
-      }
+      "props": { "label": "时间选择框" }
     },
     {
       "id": "TextNote_1776581a0",
@@ -114,10 +87,7 @@
       "type": 2,
       "default": false,
       "componentName": "TextNote",
-      "props": {
-        "label": "说明文字",
-        "placeholder": "请输入"
-      }
+      "props": { "label": "说明文字", "placeholder": "请输入" }
     },
     {
       "id": "PhotoField_19f19c732",
@@ -125,10 +95,7 @@
       "type": 3,
       "default": false,
       "componentName": "PhotoField",
-      "props": {
-        "label": "图片",
-        "placeholder": "上传文件"
-      }
+      "props": { "label": "图片", "placeholder": "上传文件" }
     },
     {
       "id": "Attachment_1a73b9a9e",
@@ -136,10 +103,7 @@
       "type": 3,
       "default": false,
       "componentName": "Attachment",
-      "props": {
-        "label": "附件",
-        "placeholder": "请上传文件"
-      }
+      "props": { "label": "附件", "placeholder": "请上传文件" }
     },
     {
       "id": "AddressField_1ac1f8d28",
@@ -147,10 +111,39 @@
       "type": 3,
       "default": false,
       "componentName": "AddressField",
-      "props": {
-        "label": "省市区/地区",
-        "placeholder": "请选择"
-      }
+      "props": { "label": "省市区/地区", "placeholder": "请选择" }
+    },
+    {
+      "id": "GridRow_1301f1cfd",
+      "title": "删格Row",
+      "type": 1,
+      "default": false,
+      "componentName": "GridRow",
+      "props": { "label": "栅格Row" }
+    },
+    {
+      "id": "GridCol_14b044bd5",
+      "title": "栅格Col",
+      "type": 1,
+      "default": false,
+      "componentName": "GridCol",
+      "props": { "label": "栅格Col" }
+    },
+    {
+      "id": "LayoutDivider_182ad61f3",
+      "title": "分割线",
+      "type": 1,
+      "default": false,
+      "componentName": "LayoutDivider",
+      "props": { "label": "分割线" }
+    },
+    {
+      "id": "LayoutSpace_1cf57fc0d",
+      "title": "间距",
+      "type": 1,
+      "default": false,
+      "componentName": "LayoutSpace",
+      "props": { "label": "间距" }
     }
   ]
 }
