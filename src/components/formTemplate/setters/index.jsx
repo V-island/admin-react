@@ -1,4 +1,4 @@
-import { Form, Input, InputNumber, Select, Radio, Switch } from 'antd';
+import { Form, Input, Select, Radio, Switch } from 'antd';
 
 // ============= 表单 ============ //
 // 单行输入框
@@ -17,15 +17,6 @@ const TextareaSetter = ({ form, setter }) => {
   return (
     <Form.Item name={setter.propName} {...setter.props}>
       <TextArea />
-    </Form.Item>
-  );
-};
-
-// 数字输入框
-const NumberSetter = ({ form, setter }) => {
-  return (
-    <Form.Item name={setter.propName} {...setter.props}>
-      <InputNumber />
     </Form.Item>
   );
 };
@@ -70,11 +61,27 @@ const SwitchSetter = ({ form, setter }) => {
   );
 };
 
+// 字段占比
+const RatioSetter = ({ form, setter }) => {
+  const options = [
+    { label: '25%', value: 25 },
+    { label: '50%', value: 50 },
+    { label: '75%', value: 70 },
+    { label: '100%', value: 100 },
+  ];
+
+  return (
+    <Form.Item name={setter.propName} {...setter.props}>
+      <Radio.Group options={options} optionType="button" buttonStyle="solid" />
+    </Form.Item>
+  );
+};
+
 export default {
   InputSetter,
   TextareaSetter,
-  NumberSetter,
   SelectSetter,
   RadioSetter,
   SwitchSetter,
+  RatioSetter,
 };

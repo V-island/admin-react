@@ -533,8 +533,8 @@ const FormAttributes = ({ activeKey, schemaMap, onUpdateSelect }) => {
   schema.setters = getSetter[schema.componentName] || [];
 
   const onFinish = (_, values) => {
-    console.log('Received values of form:', values);
-    onUpdateSelect(values);
+    console.log('Received values of form:', schema, values);
+    onUpdateSelect(activeKey, values);
   };
 
   form.setFieldsValue(schema.props);

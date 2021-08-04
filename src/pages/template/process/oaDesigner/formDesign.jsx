@@ -236,14 +236,14 @@ class FormDesign extends Component {
   };
 
   // 更新控件信息
-  onUpdateProperty = (_, values) => {
+  onUpdateProperty = (schemaId, props) => {
     const schemas = [...this.state.schemas];
-    const schemaId = values.id;
+    props.id = schemaId;
     const {
       _ctx: { swapPath },
     } = this.state.schemaMap[schemaId];
     const newSwapPath = swapPath.split('/').slice(1);
-    const newSchemas = this.findSchemas(schemas, newSwapPath, 'update', values);
+    const newSchemas = this.findSchemas(schemas, newSwapPath, 'update', props);
     const newSchemaMap = this.createSchemaMap(newSchemas, '', '/');
 
     const newState = {
