@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { uuid } from '@/utils/utils';
-import PropertyLibrary from '@/components/propertyLibrary';
 import ControlList from './controlList';
 import PreviewContainer from './previewContainer';
+import PropertyLibrary from './propertyLibrary';
 
 const LayoutWrapper = styled.div`
   display: flex;
@@ -34,6 +34,7 @@ const LayoutContent = styled.div`
 const LayoutConfig = styled.div`
   width: 300px;
   overflow-y: auto;
+  padding: 12px;
   background: #fff;
   border-left: 1px solid #ecedef;
 `;

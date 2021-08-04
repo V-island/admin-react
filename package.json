@@ -24,6 +24,7 @@
     "@ant-design/icons": "^4.2.1",
     "@ant-design/pro-layout": "^6.5.0",
     "antd": "^4.16.8",
+    "formik": "^2.2.9",
     "react": "17.x",
     "react-beautiful-dnd": "^13.1.0",
     "react-dnd": "^14.0.2",
